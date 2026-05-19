@@ -1,0 +1,58 @@
+/* ---------------------------------------------------------------------------
+   Print Stylesheet — @media print rules for A4 PDF output
+   Layer: styles
+   ---------------------------------------------------------------------------
+   Targets global class names set on component root elements.
+   See component HTML comments for the explicit contract.
+
+   Print targets:
+     .sidebar            → SidebarShell.vue root
+     .preview-panel      → PreviewPanel.vue root
+     .template-switcher  → PreviewPanel.vue template-switcher bar
+     .action-bar         → shared/ActionBar.vue root
+     .no-print           → any element that should be hidden
+     .invoice            → template invoice card root
+   --------------------------------------------------------------------------- */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  /* Hide sidebar */
+  .sidebar,
+  .template-switcher,
+  .action-bar,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Preview panel expands to full page */
+  .preview-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Invoice card — A4 dimensions */
+  .invoice {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 16mm 18mm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-inside: avoid;
+  }
+
+  /* Prevent page breaks inside sections */
+  .invoice-section {
+    page-break-inside: avoid;
+  }
+}

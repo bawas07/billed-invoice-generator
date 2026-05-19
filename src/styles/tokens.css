@@ -1,0 +1,77 @@
+/* ---------------------------------------------------------------------------
+   Design Tokens — CSS Custom Properties
+   Layer: styles (zero dependencies)
+   ---------------------------------------------------------------------------
+   16 color tokens · 3 typefaces · 7-step type scale · 4 weights
+   10-step spacing scale (4px base) · 3 border radii · 4 layout dimensions
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* --------------------------------------------------------------------- */
+  /* 4.1 — Color Tokens (14 total)                                         */
+  /* --------------------------------------------------------------------- */
+  --color-cream: #F5F0E8;
+  --color-white: #FDFCFA;
+  --color-ink: #1A1614;
+  --color-text-primary: #1A1614;
+  --color-text-secondary: #4A4540;
+  --color-text-muted: #8A8178;
+  --color-rust: #C4622D;
+  --color-rust-light: #F0E8E0;
+  --color-rust-dark: #A0501F;
+  --color-border: #D9D2C5;
+  --color-border-ink: rgba(245, 240, 232, 0.12);
+  --color-success: #3D7A5A;
+  --color-warning: #B07D2A;
+  --color-error: #C0392B;
+
+  /* --------------------------------------------------------------------- */
+  /* 4.2 — Typography Tokens                                                */
+  /* --------------------------------------------------------------------- */
+  /* Font families */
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+
+  /* Type scale */
+  --text-xs: 10px;
+  --text-sm: 12px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --text-2xl: 36px;
+
+  /* Font weights */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semi: 600;
+
+  /* --------------------------------------------------------------------- */
+  /* 4.3 — Spacing Tokens (4px base)                                       */
+  /* --------------------------------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Border radii */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* --------------------------------------------------------------------- */
+  /* 4.4 — Layout Tokens                                                   */
+  /* --------------------------------------------------------------------- */
+  --sidebar-width: 420px;
+  --preview-min-width: 600px;
+  --invoice-max-width: 794px;
+  --invoice-padding: 48px;
+}
