@@ -1,33 +1,67 @@
 <script setup lang="ts">
 // ---------------------------------------------------------------------------
 // App Root — Two-column layout shell with composable coordination
-// Layer: components (depends on: composables)
+// Layer: components (depends on: composables, components)
 // ---------------------------------------------------------------------------
+// Initializes all composables, provides them via typed injection keys,
+// and renders the sidebar, preview panel (with action bar), and toast
+// notifications.
+//
+// M1+ wiring:
+// - useInvoice: invoice state, resetInvoice, loadInvoice
+// - useJsonIO: JSON export/import
+// - useLogoUpload: logo base64 conversion
+// - useToast: notification system
+// - useHistory: invoice history stack (for M3)
+// - useTemplate: active template selection
+// ---------------------------------------------------------------------------
+
+import { provide } from 'vue'
 
 import SidebarShell from '@/components/sidebar/SidebarShell.vue'
 import PreviewPanel from '@/components/preview/PreviewPanel.vue'
+import Toast from '@/components/shared/Toast.vue'
 
-/*
- * print.css contract:
- * The sidebar wrapper has class="sidebar" (SidebarShell.vue root)
- * The preview wrapper has class="preview-panel" (PreviewPanel.vue root)
- * The template switcher bar has class="template-switcher"
- *   (PreviewPanel.vue template element)
- *
- * Composable coordination is wired in M1+ when form inputs and
- * template switching are interactive.
- */
+import { useInvoice } from '@/composables/useInvoice'
+import { useJsonIO } from '@/composables/useJsonIO'
+import { useLogoUpload } from '@/composables/useLogoUpload'
+import { useToast } from '@/composables/useToast'
+import { useHistory } from '@/composables/useHistory'
+import { useTemplate } from '@/composables/useTemplate'
 
-// M1+ — handleLoadInvoice() will coordinate useInvoice + useTemplate
-// export function handleLoadInvoice(data: InvoiceData): void {
-//   const templateId = useInvoice().loadInvoice(data)
-//   useTemplate().setTemplate(templateId)
-// }
+import {
+  INVOICE_KEY,
+  JSON_IO_KEY,
+  LOGO_UPLOAD_KEY,
+  TOAST_KEY,
+  HISTORY_KEY,
+  TEMPLATE_KEY,
+} from '@/composables/injection-keys'
+
+// Initialize composables
+const invoice = useInvoice()
+const jsonIO = useJsonIO()
+const logoUpload = useLogoUpload()
+const toast = useToast()
+const history = useHistory()
+const template = useTemplate()
+
+// Provide via typed injection keys
+provide(INVOICE_KEY, invoice)
+provide(JSON_IO_KEY, jsonIO)
+provide(LOGO_UPLOAD_KEY, logoUpload)
+provide(TOAST_KEY, toast)
+provide(HISTORY_KEY, history)
+provide(TEMPLATE_KEY, template)
+
+// handleLoadInvoice will be wired in M3 when history panel is interactive.
+// At that point it will coordinate useInvoice.loadInvoice + useTemplate.setTemplate.
 </script>
 
 <template>
   <SidebarShell />
   <PreviewPanel />
+  <Toast />
 </template>
 
 <style scoped>

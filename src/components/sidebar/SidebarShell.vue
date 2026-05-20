@@ -1,5 +1,19 @@
 <script setup lang="ts">
-// Sidebar layout shell — brand header, tabs, content area
+// ---------------------------------------------------------------------------
+// SidebarShell — sidebar layout with tab navigation and form content
+// Layer: components (depends on: Vue, injection keys)
+// ---------------------------------------------------------------------------
+
+import { ref, type Ref } from 'vue'
+import InvoiceForm from '@/components/shared/InvoiceForm.vue'
+
+type SidebarTab = 'editor' | 'history'
+
+const activeTab: Ref<SidebarTab> = ref('editor')
+
+function setTab(tab: SidebarTab): void {
+  activeTab.value = tab
+}
 </script>
 
 <template>
@@ -13,11 +27,29 @@
       <p class="sidebar__subtitle">INVOICE GENERATOR</p>
     </div>
     <nav class="sidebar__tabs">
-      <button class="sidebar__tab sidebar__tab--active">EDITOR</button>
-      <button class="sidebar__tab">HISTORY</button>
+      <button
+        class="sidebar__tab"
+        :class="{ 'sidebar__tab--active': activeTab === 'editor' }"
+        @click="setTab('editor')"
+      >
+        EDITOR
+      </button>
+      <button
+        class="sidebar__tab"
+        :class="{ 'sidebar__tab--active': activeTab === 'history' }"
+        @click="setTab('history')"
+      >
+        HISTORY
+      </button>
     </nav>
     <div class="sidebar__content">
-      <!-- Content area — populated in M1+ -->
+      <!-- Editor tab: InvoiceForm -->
+      <InvoiceForm v-if="activeTab === 'editor'" />
+
+      <!-- History tab: placeholder for M3 -->
+      <div v-else class="sidebar__history-placeholder">
+        <p class="sidebar__history-text">Invoice history will appear here.</p>
+      </div>
     </div>
   </aside>
 </template>
@@ -72,6 +104,11 @@
   cursor: pointer;
   border-bottom: 2px solid transparent;
   text-transform: uppercase;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar__tab:hover {
+  color: var(--color-cream);
 }
 
 .sidebar__tab--active {
@@ -83,5 +120,19 @@
   flex: 1;
   padding: var(--space-6);
   overflow-y: auto;
+}
+
+.sidebar__history-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.sidebar__history-text {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  text-align: center;
 }
 </style>

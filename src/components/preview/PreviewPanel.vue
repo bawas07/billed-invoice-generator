@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// Preview panel — template switcher + invoice preview card
+// Preview panel — template switcher + invoice preview card + action bar
+
+import ActionBar from './ActionBar.vue'
 </script>
 
 <template>
@@ -19,6 +21,7 @@
       <button class="template-pill">Sidebar</button>
       <button class="template-pill">Friendly</button>
     </div>
+
     <div class="preview-panel__card">
       <div class="invoice-placeholder">
         <h2 class="invoice-placeholder__title">Classic Template</h2>
@@ -54,6 +57,11 @@
           <div class="invoice-placeholder__line invoice-placeholder__line--medium"></div>
         </div>
       </div>
+    </div>
+
+    <!-- Action bar at the bottom of the preview panel -->
+    <div class="preview-panel__actions">
+      <ActionBar />
     </div>
   </main>
 </template>
@@ -103,6 +111,13 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   padding: var(--invoice-padding);
   border-radius: var(--border-radius-sm);
+}
+
+.preview-panel__actions {
+  width: 100%;
+  max-width: var(--invoice-max-width);
+  padding: var(--space-4) 0;
+  flex-shrink: 0;
 }
 
 .invoice-placeholder__title {
