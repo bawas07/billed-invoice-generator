@@ -9,7 +9,7 @@
      .sidebar            → SidebarShell.vue root
      .preview-panel      → PreviewPanel.vue root
      .template-switcher  → PreviewPanel.vue template-switcher bar
-     .action-bar         → shared/ActionBar.vue root
+      .action-bar         → preview/ActionBar.vue root
      .no-print           → any element that should be hidden
      .invoice            → template invoice card root
    --------------------------------------------------------------------------- */
