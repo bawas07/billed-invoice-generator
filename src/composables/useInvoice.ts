@@ -3,7 +3,7 @@
 // Layer: composables (depends on: Vue, types, utils)
 // ---------------------------------------------------------------------------
 
-import { ref, computed, watch, type Ref } from 'vue'
+import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { createEmptyInvoice } from '@/utils/defaults'
 import { computeTotals } from '@/utils/calculations'
 import type { InvoiceData, TemplateId, Totals } from '@/types'
@@ -23,7 +23,15 @@ import type { InvoiceData, TemplateId, Totals } from '@/types'
  * A re-entrancy guard prevents infinite recursion when writing back triggers
  * the same watcher through the updated reactive proxy.
  */
-export function useInvoice() {
+export interface UseInvoiceReturn {
+  invoice: Ref<InvoiceData>
+  isDirty: Ref<boolean>
+  totals: ComputedRef<Totals>
+  resetInvoice: () => void
+  loadInvoice: (data: InvoiceData) => TemplateId
+}
+
+export function useInvoice(): UseInvoiceReturn {
   const initialSnapshot = createEmptyInvoice()
 
   // Deep clone so mutations don't affect the snapshot

@@ -14,7 +14,14 @@ import type { InvoiceData } from '@/types'
  * - `loadFromHistory(index)`: Deep-clone and return the history entry
  * - `clearHistory()`: Empty the history stack
  */
-export function useHistory() {
+export interface UseHistoryReturn {
+  history: Ref<InvoiceData[]>
+  addToHistory: (data: InvoiceData) => void
+  loadFromHistory: (index: number) => InvoiceData
+  clearHistory: () => void
+}
+
+export function useHistory(): UseHistoryReturn {
   const history: Ref<InvoiceData[]> = ref([])
 
   /**

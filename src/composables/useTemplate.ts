@@ -12,7 +12,12 @@ import type { TemplateId } from '@/types'
  * - `activeTemplate`: The currently selected TemplateId
  * - `setTemplate(id)`: Update the active template
  */
-export function useTemplate(initial?: TemplateId) {
+export interface UseTemplateReturn {
+  activeTemplate: Ref<TemplateId>
+  setTemplate: (id: TemplateId) => void
+}
+
+export function useTemplate(initial?: TemplateId): UseTemplateReturn {
   const activeTemplate: Ref<TemplateId> = ref(initial ?? 'classic')
 
   /**
