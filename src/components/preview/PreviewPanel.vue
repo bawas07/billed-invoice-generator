@@ -1,65 +1,109 @@
 <script setup lang="ts">
-// Preview panel — template switcher + invoice preview card + action bar
+// ---------------------------------------------------------------------------
+// PreviewPanel — live invoice preview with debounced updates
+// Layer: components (depends on: Vue, composables, templates)
+// ---------------------------------------------------------------------------
+// Injects useInvoice and useTemplate composables. Maintains a debounced
+// shallowRef of invoice data (100ms) to avoid visual jank on fast typing.
+// Renders the active template component dynamically via <component :is>
+// with a 150ms cross-fade Transition.
+// ---------------------------------------------------------------------------
+
+import { inject, computed, shallowRef, watch, onBeforeUnmount, type Component } from 'vue'
+import { INVOICE_KEY, TEMPLATE_KEY } from '@/composables/injection-keys'
+import type { TemplateId, InvoiceData } from '@/types'
 
 import ActionBar from './ActionBar.vue'
+import TemplateSwitcher from './TemplateSwitcher.vue'
+import ClassicTemplate from './templates/ClassicTemplate.vue'
+import MinimalTemplate from './templates/MinimalTemplate.vue'
+import BoldTemplate from './templates/BoldTemplate.vue'
+import SidebarTemplate from './templates/SidebarTemplate.vue'
+import FriendlyTemplate from './templates/FriendlyTemplate.vue'
+
+const invoice = inject(INVOICE_KEY)
+const template = inject(TEMPLATE_KEY)
+
+if (!invoice || !template) {
+  throw new Error(
+    'PreviewPanel requires INVOICE_KEY and TEMPLATE_KEY to be provided. ' +
+    'Ensure App.vue provides both composables.',
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Debounced invoice shallowRef
+// ---------------------------------------------------------------------------
+// Using shallowRef so that replacing the entire value triggers a re-render.
+// Deep watching on invoice.value detects any nested change (form field edits),
+// then debounces by 100ms before cloning into a fresh object.
+// ---------------------------------------------------------------------------
+
+// Clone the initial value so debouncedInvoice starts as an independent snapshot
+let initialClone: InvoiceData
+try {
+  initialClone = structuredClone(invoice.invoice.value)
+} catch {
+  initialClone = JSON.parse(JSON.stringify(invoice.invoice.value))
+}
+const debouncedInvoice = shallowRef<InvoiceData>(initialClone)
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(
+  () => invoice.invoice.value,
+  (newVal) => {
+    if (debounceTimer) clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => {
+      // structuredClone with try/catch fallback for edge cases
+      try {
+        debouncedInvoice.value = structuredClone(newVal)
+      } catch {
+        debouncedInvoice.value = JSON.parse(JSON.stringify(newVal))
+      }
+    }, 100)
+  },
+  { deep: true },
+)
+
+onBeforeUnmount(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
+
+// ---------------------------------------------------------------------------
+// Dynamic template component mapping
+// ---------------------------------------------------------------------------
+
+const activeTemplateComponent = computed(() => {
+  const map: Record<TemplateId, Component> = {
+    classic: ClassicTemplate,
+    minimal: MinimalTemplate,
+    bold: BoldTemplate,
+    sidebar: SidebarTemplate,
+    friendly: FriendlyTemplate,
+  }
+  return map[template.activeTemplate.value]
+})
 </script>
 
 <template>
   <!--
     Root element uses class="preview-panel" for print.css targeting.
-    @media print expands .preview-panel to full width.
+    @media print expands .preview-panel to full width and hides sidebar, etc.
   -->
   <main class="preview-panel">
-    <!--
-      Template switcher bar — class="template-switcher" for print.css hiding.
-      @media print hides .template-switcher via print.css.
-    -->
-    <div class="template-switcher">
-      <button class="template-pill template-pill--active">Classic</button>
-      <button class="template-pill">Minimal</button>
-      <button class="template-pill">Bold</button>
-      <button class="template-pill">Sidebar</button>
-      <button class="template-pill">Friendly</button>
-    </div>
+    <TemplateSwitcher />
 
     <div class="preview-panel__card">
-      <div class="invoice-placeholder">
-        <h2 class="invoice-placeholder__title">Classic Template</h2>
-        <hr class="invoice-placeholder__divider" />
-        <div class="invoice-placeholder__section">
-          <h3 class="invoice-placeholder__label">FROM</h3>
-          <div class="invoice-placeholder__lines">
-            <div class="invoice-placeholder__line"></div>
-            <div class="invoice-placeholder__line"></div>
-            <div class="invoice-placeholder__line invoice-placeholder__line--short"></div>
-          </div>
-        </div>
-        <div class="invoice-placeholder__section">
-          <h3 class="invoice-placeholder__label">TO</h3>
-          <div class="invoice-placeholder__lines">
-            <div class="invoice-placeholder__line"></div>
-            <div class="invoice-placeholder__line"></div>
-            <div class="invoice-placeholder__line invoice-placeholder__line--short"></div>
-          </div>
-        </div>
-        <div class="invoice-placeholder__section">
-          <h3 class="invoice-placeholder__label">LINE ITEMS</h3>
-          <div class="invoice-placeholder__table">
-            <div class="invoice-placeholder__row" v-for="i in 3" :key="i">
-              <div class="invoice-placeholder__col invoice-placeholder__col--wide"></div>
-              <div class="invoice-placeholder__col"></div>
-              <div class="invoice-placeholder__col"></div>
-            </div>
-          </div>
-        </div>
-        <div class="invoice-placeholder__section">
-          <h3 class="invoice-placeholder__label">TOTAL</h3>
-          <div class="invoice-placeholder__line invoice-placeholder__line--medium"></div>
-        </div>
-      </div>
+      <Transition mode="out-in">
+        <component
+          :is="activeTemplateComponent"
+          :key="template.activeTemplate.value"
+          :invoice="debouncedInvoice"
+        />
+      </Transition>
     </div>
 
-    <!-- Action bar at the bottom of the preview panel -->
     <div class="preview-panel__actions">
       <ActionBar />
     </div>
@@ -79,37 +123,10 @@ import ActionBar from './ActionBar.vue'
   padding: var(--space-6);
 }
 
-.template-switcher {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  align-self: flex-start;
-}
-
-.template-pill {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 1px;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.template-pill--active {
-  background: var(--color-ink);
-  color: var(--color-cream);
-  border-color: var(--color-ink);
-}
-
 .preview-panel__card {
   width: var(--invoice-max-width);
   min-height: 1123px;
-  background: var(--color-white);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  padding: var(--invoice-padding);
   border-radius: var(--border-radius-sm);
 }
 
@@ -120,73 +137,14 @@ import ActionBar from './ActionBar.vue'
   flex-shrink: 0;
 }
 
-.invoice-placeholder__title {
-  font-family: var(--font-serif);
-  font-size: var(--text-lg);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-4);
+/* Cross-fade transition for template switching (150ms) */
+.v-leave-active,
+.v-enter-active {
+  transition: opacity 150ms ease;
 }
 
-.invoice-placeholder__divider {
-  border: none;
-  border-top: 1px solid var(--color-border);
-  margin: 0 0 var(--space-6);
-}
-
-.invoice-placeholder__section {
-  margin-bottom: var(--space-6);
-}
-
-.invoice-placeholder__label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1px;
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-3);
-}
-
-.invoice-placeholder__lines {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.invoice-placeholder__line {
-  height: 14px;
-  background: var(--color-border);
-  border-radius: 2px;
-  width: 100%;
-  opacity: 0.5;
-}
-
-.invoice-placeholder__line--short {
-  width: 40%;
-}
-
-.invoice-placeholder__line--medium {
-  width: 60%;
-}
-
-.invoice-placeholder__table {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.invoice-placeholder__row {
-  display: flex;
-  gap: var(--space-4);
-}
-
-.invoice-placeholder__col {
-  height: 14px;
-  background: var(--color-border);
-  border-radius: 2px;
-  flex: 1;
-  opacity: 0.5;
-}
-
-.invoice-placeholder__col--wide {
-  flex: 3;
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

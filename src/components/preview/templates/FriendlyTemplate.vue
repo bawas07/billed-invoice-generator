@@ -1,15 +1,371 @@
 <script setup lang="ts">
-// Friendly template — placeholder stub for M2+
+// ---------------------------------------------------------------------------
+// FriendlyTemplate — warm, rounded, creative freelancer invoice layout
+// Layer: components (depends on: Vue, types, composables)
+// ---------------------------------------------------------------------------
+// Warm background (#FFFDF9), rounded cards for FROM/TO, rounded table,
+// soft shadows, rust accent. Root element has class="invoice" for
+// print.css A4 sizing compatibility.
+// ---------------------------------------------------------------------------
+
+import type { InvoiceData } from '@/types'
+import { useInvoiceDisplay } from '@/composables/useInvoiceDisplay'
+
+const props = defineProps<{
+  invoice: InvoiceData
+}>()
+
+const display = useInvoiceDisplay(props)
 </script>
 
 <template>
-  <div class="friendly-template">
-    <!-- Template content rendered in M2 -->
+  <div class="invoice friendly-template">
+    <!-- Logo -->
+    <div
+      v-if="display.hasLogo"
+      class="friendly-template__logo-wrapper"
+      :class="{
+        'friendly-template__logo-wrapper--left': invoice.logo!.position === 'left',
+        'friendly-template__logo-wrapper--right': invoice.logo!.position === 'right',
+      }"
+    >
+      <img :src="invoice.logo!.data" alt="Logo" class="friendly-template__logo" />
+    </div>
+
+    <!-- Title Badge -->
+    <div class="friendly-template__badge">
+      <h1 class="friendly-template__badge-text">INVOICE</h1>
+    </div>
+
+    <p class="friendly-template__invoice-number">{{ invoice.meta.invoice_number }}</p>
+
+    <!-- FROM / TO Cards -->
+    <div class="friendly-template__cards">
+      <div class="friendly-template__card">
+        <h2 class="friendly-template__card-label">FROM</h2>
+        <p class="friendly-template__card-name">{{ invoice.from.name }}</p>
+        <p class="friendly-template__card-detail">{{ invoice.from.address }}</p>
+        <p v-if="invoice.from.email" class="friendly-template__card-detail">
+          {{ invoice.from.email }}
+        </p>
+        <p v-if="invoice.from.phone" class="friendly-template__card-detail">
+          {{ invoice.from.phone }}
+        </p>
+      </div>
+      <div class="friendly-template__card">
+        <h2 class="friendly-template__card-label">TO</h2>
+        <p class="friendly-template__card-name">{{ invoice.to.name }}</p>
+        <p class="friendly-template__card-detail">{{ invoice.to.address }}</p>
+        <p v-if="invoice.to.email" class="friendly-template__card-detail">
+          {{ invoice.to.email }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div class="friendly-template__dates">
+      <span>Issued: {{ display.formatDate(invoice.meta.issue_date) }}</span>
+      <span>Due: {{ display.formatDate(invoice.meta.due_date) }}</span>
+    </div>
+
+    <!-- Items (rounded table) -->
+    <div class="friendly-template__table-wrapper">
+      <table class="friendly-template__table">
+        <thead>
+          <tr>
+            <th class="friendly-template__table-header friendly-template__table-header--desc">
+              Description
+            </th>
+            <th class="friendly-template__table-header friendly-template__table-header--num">
+              Amount
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, index) in invoice.line_items"
+            :key="item.id"
+            class="friendly-template__table-row"
+            :class="{ 'friendly-template__table-row--last': index === invoice.line_items.length - 1 }"
+          >
+            <td class="friendly-template__table-cell friendly-template__table-cell--desc">
+              {{ item.description }}
+            </td>
+            <td class="friendly-template__table-cell friendly-template__table-cell--num">
+              {{ display.formatAmount(item.amount) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Totals -->
+    <div class="friendly-template__totals">
+      <div class="friendly-template__totals-row">
+        <span class="friendly-template__totals-label">Subtotal</span>
+        <span class="friendly-template__totals-value">
+          {{ display.formatAmount(invoice.totals.subtotal) }}
+        </span>
+      </div>
+      <div v-if="display.hasDiscount" class="friendly-template__totals-row">
+        <span class="friendly-template__totals-label friendly-template__totals-label--discount">
+          {{ display.discountLabel() }}
+        </span>
+      </div>
+      <div v-if="invoice.totals.tax_percent > 0" class="friendly-template__totals-row">
+        <span class="friendly-template__totals-label">
+          {{ invoice.totals.tax_label || 'Tax' }} ({{ invoice.totals.tax_percent }}%):
+        </span>
+        <span class="friendly-template__totals-value">
+          {{ display.formatAmount(invoice.totals.tax_amount) }}
+        </span>
+      </div>
+      <hr class="friendly-template__totals-divider" />
+      <div class="friendly-template__totals-row friendly-template__totals-row--total">
+        <span class="friendly-template__totals-label friendly-template__totals-label--total">
+          Total
+        </span>
+        <span class="friendly-template__totals-value friendly-template__totals-value--total">
+          {{ display.formatAmount(invoice.totals.total) }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div v-if="display.hasNotes" class="friendly-template__notes">
+      <div class="friendly-template__notes-card">
+        <p class="friendly-template__notes-text">{{ invoice.notes }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.friendly-template {
-  /* Stub - rendered in M2 */
+/* Screen-only styles — let .invoice from print.css take over at print time */
+@media screen {
+  .friendly-template {
+    width: 100%;
+    min-height: 1123px;
+    background: #FFFDF9;
+    padding: var(--invoice-padding);
+  }
+}
+
+/* ---- Logo ---- */
+.friendly-template__logo-wrapper {
+  margin-bottom: var(--space-5);
+}
+
+.friendly-template__logo-wrapper--left {
+  text-align: left;
+}
+
+.friendly-template__logo-wrapper--right {
+  text-align: right;
+}
+
+.friendly-template__logo {
+  max-height: 60px;
+  max-width: 200px;
+  object-fit: contain;
+}
+
+/* ---- Badge ---- */
+.friendly-template__badge {
+  display: inline-block;
+  background: var(--color-rust);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-2) var(--space-5);
+  margin-bottom: var(--space-3);
+}
+
+.friendly-template__badge-text {
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  color: var(--color-white);
+  margin: 0;
+  font-weight: var(--weight-regular);
+}
+
+.friendly-template__invoice-number {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-6);
+}
+
+/* ---- Cards ---- */
+.friendly-template__cards {
+  display: flex;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.friendly-template__card {
+  flex: 1;
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-5);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.friendly-template__card-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.friendly-template__card-name {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-1);
+}
+
+.friendly-template__card-detail {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-1);
+  line-height: 1.5;
+}
+
+/* ---- Dates ---- */
+.friendly-template__dates {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---- Table ---- */
+.friendly-template__table-wrapper {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: var(--space-5);
+}
+
+.friendly-template__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-white);
+}
+
+.friendly-template__table-header {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-weight: var(--weight-regular);
+  background: var(--color-rust-light);
+}
+
+.friendly-template__table-header--desc {
+  width: 70%;
+}
+
+.friendly-template__table-header--num {
+  width: 30%;
+  text-align: right;
+}
+
+.friendly-template__table-row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.friendly-template__table-row--last {
+  border-bottom: none;
+}
+
+.friendly-template__table-cell {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  padding: var(--space-3) var(--space-4);
+  vertical-align: top;
+}
+
+.friendly-template__table-cell--desc {
+  width: 70%;
+}
+
+.friendly-template__table-cell--num {
+  width: 30%;
+  text-align: right;
+}
+
+/* ---- Totals ---- */
+.friendly-template__totals {
+  margin-left: auto;
+  width: 260px;
+  margin-bottom: var(--space-6);
+}
+
+.friendly-template__totals-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+}
+
+.friendly-template__totals-label {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.friendly-template__totals-label--discount {
+  color: var(--color-error);
+}
+
+.friendly-template__totals-value {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.friendly-template__totals-divider {
+  border: none;
+  border-top: 2px solid var(--color-rust);
+  margin: var(--space-2) 0;
+}
+
+.friendly-template__totals-row--total {
+  padding: var(--space-2) 0;
+}
+
+.friendly-template__totals-label--total {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+}
+
+.friendly-template__totals-value--total {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  color: var(--color-text-primary);
+  font-weight: var(--weight-medium);
+}
+
+/* ---- Notes ---- */
+.friendly-template__notes {
+  margin-top: var(--space-4);
+}
+
+.friendly-template__notes-card {
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.friendly-template__notes-text {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  margin: 0;
+  line-height: 1.6;
 }
 </style>
