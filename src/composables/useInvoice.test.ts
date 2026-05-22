@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { useInvoice } from './useInvoice'
-import { createEmptyInvoice } from '@/utils/defaults'
+import { createEmptyInvoice, getNextInvoiceNumber } from '@/utils/defaults'
 import type { InvoiceData } from '@/types'
 
 describe('useInvoice', () => {
@@ -27,6 +27,58 @@ describe('useInvoice', () => {
     it('should have zeroed totals', () => {
       expect(invoice.totals.value.subtotal).toBe(0)
       expect(invoice.totals.value.total).toBe(0)
+    })
+  })
+
+  describe('isDirty detection (M3)', () => {
+    it('should become true after editing a field', () => {
+      invoice.invoice.value.to.name = 'Client Name'
+      expect(invoice.isDirty.value).toBe(true)
+    })
+
+    it('should remain true after multiple edits', () => {
+      invoice.invoice.value.to.name = 'Client'
+      expect(invoice.isDirty.value).toBe(true)
+      invoice.invoice.value.from.name = 'Me'
+      expect(invoice.isDirty.value).toBe(true)
+    })
+
+    it('should be false after resetInvoice', () => {
+      invoice.invoice.value.to.name = 'Client'
+      invoice.resetInvoice()
+      expect(invoice.isDirty.value).toBe(false)
+    })
+
+    it('should be false after nextInvoiceNumber', () => {
+      invoice.invoice.value.to.name = 'Client'
+      invoice.nextInvoiceNumber()
+      expect(invoice.isDirty.value).toBe(false)
+    })
+
+    it('should not set isDirty when loadInvoice is called with markDirty=false', () => {
+      const data = createEmptyInvoice()
+      invoice.loadInvoice(data, false)
+      expect(invoice.isDirty.value).toBe(false)
+    })
+
+    it('should set isDirty when loadInvoice is called with markDirty=true (default)', () => {
+      const data = createEmptyInvoice()
+      invoice.loadInvoice(data)
+      expect(invoice.isDirty.value).toBe(true)
+    })
+  })
+
+  describe('nextInvoiceNumber (M3)', () => {
+    it('should increment the invoice number', () => {
+      const currentNumber = invoice.invoice.value.meta.invoice_number
+      const expectedNext = getNextInvoiceNumber(currentNumber)
+      invoice.nextInvoiceNumber()
+      expect(invoice.invoice.value.meta.invoice_number).toBe(expectedNext)
+    })
+
+    it('should increment from INV-001 to INV-002 when starting fresh', () => {
+      invoice.nextInvoiceNumber()
+      expect(invoice.invoice.value.meta.invoice_number).toBe('INV-002')
     })
   })
 
