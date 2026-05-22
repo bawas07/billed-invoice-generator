@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 
 import { describe, it, expect } from 'vitest'
-import { createEmptyInvoice } from './defaults'
+import { createEmptyInvoice, getNextInvoiceNumber } from './defaults'
 
 describe('createEmptyInvoice', () => {
   it('should return a complete InvoiceData object', () => {
@@ -115,5 +115,31 @@ describe('createEmptyInvoice', () => {
 
     invoice1.meta.invoice_number = 'CUSTOM-001'
     expect(invoice2.meta.invoice_number).toBe('INV-001')
+  })
+})
+
+describe('getNextInvoiceNumber', () => {
+  it('should increment INV-001 to INV-002', () => {
+    expect(getNextInvoiceNumber('INV-001')).toBe('INV-002')
+  })
+
+  it('should increment INV-099 to INV-100 (boundary: 2→3 digits)', () => {
+    expect(getNextInvoiceNumber('INV-099')).toBe('INV-100')
+  })
+
+  it('should increment INV-999 to INV-1000 (boundary: 3→4 digits)', () => {
+    expect(getNextInvoiceNumber('INV-999')).toBe('INV-1000')
+  })
+
+  it('should preserve digit count: INV-0100 → INV-0101', () => {
+    expect(getNextInvoiceNumber('INV-0100')).toBe('INV-0101')
+  })
+
+  it('should return INV-001 for non-standard format (foo)', () => {
+    expect(getNextInvoiceNumber('foo')).toBe('INV-001')
+  })
+
+  it('should return INV-001 for empty string', () => {
+    expect(getNextInvoiceNumber('')).toBe('INV-001')
   })
 })

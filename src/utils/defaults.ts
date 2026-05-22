@@ -8,6 +8,35 @@ import { addDays, format } from 'date-fns'
 import type { InvoiceData } from '@/types'
 
 /**
+ * Get the next invoice number by incrementing the numeric portion of the
+ * current invoice number.
+ *
+ * Parses the `INV-XXX` pattern, increments the numeric portion, and pads
+ * to match the original digit count. Falls back to `'INV-001'` for any
+ * non-standard format.
+ *
+ * Examples:
+ *   'INV-001'  → 'INV-002'
+ *   'INV-099'  → 'INV-100'
+ *   'INV-999'  → 'INV-1000'
+ *   'INV-0100' → 'INV-0101'
+ *   'foo'      → 'INV-001'
+ *   ''         → 'INV-001'
+ */
+export function getNextInvoiceNumber(current: string): string {
+  const match = current.match(/^(.*?)(\d+)$/)
+  if (!match) return 'INV-001'
+
+  const prefix = match[1] || 'INV-'
+  const numStr = match[2]
+  const digitCount = numStr.length
+  const num = parseInt(numStr, 10)
+  const nextNum = num + 1
+  const padded = String(nextNum).padStart(digitCount, '0')
+  return `${prefix}${padded}`
+}
+
+/**
  * Create a complete InvoiceData object populated with sensible defaults.
  *
  * - `schema_version`: `'1.0'`
