@@ -12,6 +12,7 @@ import {
   TEMPLATE_KEY,
   JSON_IO_KEY,
   TOAST_KEY,
+  HISTORY_KEY,
 } from '@/composables/injection-keys'
 import { createEmptyInvoice } from '@/utils/defaults'
 import type { InvoiceData, TemplateId } from '@/types'
@@ -28,6 +29,7 @@ function createMockInvoice(initialData?: InvoiceData) {
     totals: ref(invoiceData.totals),
     resetInvoice: vi.fn(),
     loadInvoice: vi.fn(),
+    nextInvoiceNumber: vi.fn(),
   }
 }
 
@@ -61,13 +63,23 @@ describe('PreviewPanel', () => {
             dismissToast: vi.fn(),
             toasts: { value: [] },
           },
+          [HISTORY_KEY as symbol]: {
+            history: { value: [] },
+            addToHistory: vi.fn(),
+            loadFromHistory: vi.fn(),
+            clearHistory: vi.fn(),
+          },
         },
       },
     }
   }
 
   beforeEach(() => {
-    mockInvoice = createMockInvoice()
+    // Create invoice with FROM name filled so skeleton doesn't render
+    // (skeleton hides when FROM, TO, or line items have data)
+    const data = createEmptyInvoice()
+    data.from.name = 'Test Company'
+    mockInvoice = createMockInvoice(data)
     mockTemplate = createMockTemplate('classic')
   })
 
@@ -174,5 +186,79 @@ describe('PreviewPanel', () => {
         },
       })
     }).toThrow()
+  })
+
+  describe('skeleton (M3)', () => {
+    it('shows skeleton when invoice is empty', () => {
+      // Override with empty invoice so skeleton shows
+      const emptyData = createEmptyInvoice()
+      const emptyMock = createMockInvoice(emptyData)
+      const wrapper = mount(PreviewPanel, {
+        global: {
+          provide: {
+            [INVOICE_KEY as symbol]: emptyMock,
+            [TEMPLATE_KEY as symbol]: mockTemplate,
+            [JSON_IO_KEY as symbol]: {
+              exportJson: vi.fn(),
+              importJson: vi.fn(),
+              importing: { value: false },
+            },
+            [TOAST_KEY as symbol]: {
+              showToast: vi.fn(),
+              dismissToast: vi.fn(),
+              toasts: { value: [] },
+            },
+            [HISTORY_KEY as symbol]: {
+              history: { value: [] },
+              addToHistory: vi.fn(),
+              loadFromHistory: vi.fn(),
+              clearHistory: vi.fn(),
+            },
+          },
+        },
+      })
+
+      const skeleton = wrapper.find('.preview-panel__skeleton')
+      expect(skeleton.exists()).toBe(true)
+    })
+
+    it('hides skeleton when FROM name is filled via debounce', async () => {
+      // Start with empty invoice
+      const emptyData = createEmptyInvoice()
+      const emptyMock = createMockInvoice(emptyData)
+      const wrapper = mount(PreviewPanel, {
+        global: {
+          provide: {
+            [INVOICE_KEY as symbol]: emptyMock,
+            [TEMPLATE_KEY as symbol]: mockTemplate,
+            [JSON_IO_KEY as symbol]: {
+              exportJson: vi.fn(),
+              importJson: vi.fn(),
+              importing: { value: false },
+            },
+            [TOAST_KEY as symbol]: {
+              showToast: vi.fn(),
+              dismissToast: vi.fn(),
+              toasts: { value: [] },
+            },
+            [HISTORY_KEY as symbol]: {
+              history: { value: [] },
+              addToHistory: vi.fn(),
+              loadFromHistory: vi.fn(),
+              clearHistory: vi.fn(),
+            },
+          },
+        },
+      })
+
+      // Now fill FROM name
+      emptyMock.invoice.value.from.name = 'Sender Corp'
+      await wrapper.vm.$nextTick()
+      vi.advanceTimersByTime(100)
+      await wrapper.vm.$nextTick()
+
+      const skeleton = wrapper.find('.preview-panel__skeleton')
+      expect(skeleton.exists()).toBe(false)
+    })
   })
 })

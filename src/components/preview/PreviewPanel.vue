@@ -71,6 +71,24 @@ onBeforeUnmount(() => {
 })
 
 // ---------------------------------------------------------------------------
+// 7.1 — Empty state skeleton detection
+// ---------------------------------------------------------------------------
+// Show static skeleton when invoice has no meaningful data:
+// no FROM name, no TO name, and no line item with a description.
+// Reads from debouncedInvoice (not live invoice.invoice.value) to stay
+// synchronized with the template rendering, avoiding a brief blank flash
+// where skeleton has hidden but template hasn't received fresh data yet.
+const showSkeleton = computed(() => {
+  const inv = debouncedInvoice.value
+  const fromNameEmpty = !inv.from.name?.trim()
+  const toNameEmpty = !inv.to.name?.trim()
+  const noLineItemDescriptions = inv.line_items.every(
+    (item) => !item.description?.trim(),
+  )
+  return fromNameEmpty && toNameEmpty && noLineItemDescriptions
+})
+
+// ---------------------------------------------------------------------------
 // Dynamic template component mapping
 // ---------------------------------------------------------------------------
 
@@ -95,7 +113,33 @@ const activeTemplateComponent = computed(() => {
     <TemplateSwitcher />
 
     <div class="preview-panel__card">
-      <Transition mode="out-in">
+      <!-- 7.3 — Static skeleton for empty invoice state -->
+      <div v-if="showSkeleton" class="preview-panel__skeleton">
+        <div class="skeleton__logo" />
+        <div class="skeleton__title" />
+        <div class="skeleton__section">
+          <div class="skeleton__bar skeleton__bar--short" />
+          <div class="skeleton__bar skeleton__bar--medium" />
+          <div class="skeleton__bar skeleton__bar--long" />
+          <div class="skeleton__bar skeleton__bar--short" />
+        </div>
+        <div class="skeleton__section">
+          <div class="skeleton__bar skeleton__bar--medium" />
+          <div class="skeleton__bar skeleton__bar--long" />
+        </div>
+        <div class="skeleton__section">
+          <div class="skeleton__bar skeleton__bar--long" />
+          <div class="skeleton__bar skeleton__bar--long" />
+        </div>
+        <div class="skeleton__section skeleton__section--totals">
+          <div class="skeleton__bar skeleton__bar--short" />
+          <div class="skeleton__bar skeleton__bar--short" />
+          <div class="skeleton__bar skeleton__bar--medium" />
+        </div>
+      </div>
+
+      <!-- Live template preview -->
+      <Transition v-else mode="out-in">
         <component
           :is="activeTemplateComponent"
           :key="template.activeTemplate.value"
@@ -146,5 +190,61 @@ const activeTemplateComponent = computed(() => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   7.2 — Empty state skeleton
+   --------------------------------------------------------------------------- */
+.preview-panel__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: var(--invoice-padding);
+  min-height: 1123px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.skeleton__logo {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-border);
+}
+
+.skeleton__title {
+  height: 28px;
+  width: 200px;
+  border-radius: var(--border-radius-sm);
+  background: var(--color-border);
+}
+
+.skeleton__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton__section--totals {
+  margin-top: auto;
+  align-items: flex-end;
+}
+
+.skeleton__bar {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--color-border);
+}
+
+.skeleton__bar--short {
+  width: 120px;
+}
+
+.skeleton__bar--medium {
+  width: 200px;
+}
+
+.skeleton__bar--long {
+  width: 320px;
 }
 </style>
