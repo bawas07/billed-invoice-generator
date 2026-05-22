@@ -3,7 +3,7 @@
 // Layer: composables (depends on: Vue, types)
 // ---------------------------------------------------------------------------
 
-import { ref, type Ref } from 'vue'
+import { ref, toRaw, type Ref } from 'vue'
 import type { InvoiceData } from '@/types'
 
 /**
@@ -21,6 +21,9 @@ export interface UseHistoryReturn {
   clearHistory: () => void
 }
 
+/** Maximum history entries to prevent unbounded memory growth in long sessions. */
+const MAX_HISTORY = 50
+
 export function useHistory(): UseHistoryReturn {
   const history: Ref<InvoiceData[]> = ref([])
 
@@ -30,13 +33,18 @@ export function useHistory(): UseHistoryReturn {
   function addToHistory(data: InvoiceData): void {
     let cloned: InvoiceData
     try {
-      cloned = structuredClone(data)
+      // Use toRaw to unwrap Vue reactive proxy before structuredClone
+      cloned = structuredClone(toRaw(data))
     } catch {
       throw new Error(
         'Failed to add to history: the invoice data could not be cloned.',
       )
     }
     history.value.push(cloned)
+    // Evict oldest entries when over cap to prevent unbounded growth
+    if (history.value.length > MAX_HISTORY) {
+      history.value.splice(0, history.value.length - MAX_HISTORY)
+    }
   }
 
   /**
@@ -51,7 +59,8 @@ export function useHistory(): UseHistoryReturn {
 
     let cloned: InvoiceData
     try {
-      cloned = structuredClone(entry)
+      // Use toRaw to unwrap Vue reactive proxy before structuredClone
+      cloned = structuredClone(toRaw(entry))
     } catch {
       throw new Error(
         'Failed to load from history: the history entry could not be cloned.',

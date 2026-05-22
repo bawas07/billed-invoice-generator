@@ -6,6 +6,7 @@
 
 import { ref, type Ref } from 'vue'
 import InvoiceForm from '@/components/shared/InvoiceForm.vue'
+import HistoryPanel from './HistoryPanel.vue'
 
 type SidebarTab = 'editor' | 'history'
 
@@ -46,10 +47,8 @@ function setTab(tab: SidebarTab): void {
       <!-- Editor tab: InvoiceForm -->
       <InvoiceForm v-if="activeTab === 'editor'" />
 
-      <!-- History tab: placeholder for M3 -->
-      <div v-else class="sidebar__history-placeholder">
-        <p class="sidebar__history-text">Invoice history will appear here.</p>
-      </div>
+      <!-- History tab: M3 — HistoryPanel -->
+      <HistoryPanel v-else />
     </div>
   </aside>
 </template>
@@ -122,17 +121,5 @@ function setTab(tab: SidebarTab): void {
   overflow-y: auto;
 }
 
-.sidebar__history-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-}
 
-.sidebar__history-text {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  text-align: center;
-}
 </style>
