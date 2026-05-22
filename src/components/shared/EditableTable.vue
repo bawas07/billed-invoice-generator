@@ -105,78 +105,80 @@ function updateItem(
         <span class="editable-table__cell editable-table__cell--action"></span>
       </div>
 
-      <!-- Data rows -->
-      <div
-        v-for="item in modelValue"
-        :key="item.id"
-        class="editable-table__row"
-      >
-        <div class="editable-table__cell editable-table__cell--desc">
-          <input
-            :value="item.description"
-            class="editable-table__input"
-            placeholder="Description"
-            @input="
-              updateItem(
-                item.id,
-                'description',
-                ($event.target as HTMLInputElement).value,
-              )
-            "
-          />
+      <!-- Data rows — wrapped in TransitionGroup for animations -->
+      <TransitionGroup name="line-item" tag="div" class="editable-table__rows">
+        <div
+          v-for="item in modelValue"
+          :key="item.id"
+          class="editable-table__row"
+        >
+          <div class="editable-table__cell editable-table__cell--desc">
+            <input
+              :value="item.description"
+              class="editable-table__input"
+              placeholder="Description"
+              @input="
+                updateItem(
+                  item.id,
+                  'description',
+                  ($event.target as HTMLInputElement).value,
+                )
+              "
+            />
+          </div>
+          <div class="editable-table__cell editable-table__cell--qty">
+            <input
+              :value="item.quantity"
+              type="number"
+              min="0"
+              step="1"
+              class="editable-table__input editable-table__input--number"
+              @input="
+                updateItem(
+                  item.id,
+                  'quantity',
+                  parseFloat(($event.target as HTMLInputElement).value) || 0,
+                )
+              "
+            />
+          </div>
+          <div class="editable-table__cell editable-table__cell--price">
+            <input
+              :value="item.unit_price"
+              type="number"
+              min="0"
+              step="0.01"
+              class="editable-table__input editable-table__input--number"
+              @input="
+                updateItem(
+                  item.id,
+                  'unit_price',
+                  parseFloat(($event.target as HTMLInputElement).value) || 0,
+                )
+              "
+            />
+          </div>
+          <div class="editable-table__cell editable-table__cell--amount">
+            <span class="editable-table__amount">
+              {{ item.amount.toFixed(2) }}
+            </span>
+          </div>
+          <div class="editable-table__cell editable-table__cell--action">
+            <button
+              class="editable-table__remove"
+              :disabled="modelValue.length <= 1"
+              :title="
+                modelValue.length <= 1
+                  ? 'Cannot remove last item'
+                  : 'Remove item'
+              "
+              @click="removeRow(item.id)"
+            >
+              ✕
+            </button>
+          </div>
         </div>
-        <div class="editable-table__cell editable-table__cell--qty">
-          <input
-            :value="item.quantity"
-            type="number"
-            min="0"
-            step="1"
-            class="editable-table__input editable-table__input--number"
-            @input="
-              updateItem(
-                item.id,
-                'quantity',
-                parseFloat(($event.target as HTMLInputElement).value) || 0,
-              )
-            "
-          />
-        </div>
-        <div class="editable-table__cell editable-table__cell--price">
-          <input
-            :value="item.unit_price"
-            type="number"
-            min="0"
-            step="0.01"
-            class="editable-table__input editable-table__input--number"
-            @input="
-              updateItem(
-                item.id,
-                'unit_price',
-                parseFloat(($event.target as HTMLInputElement).value) || 0,
-              )
-            "
-          />
-        </div>
-        <div class="editable-table__cell editable-table__cell--amount">
-          <span class="editable-table__amount">
-            {{ item.amount.toFixed(2) }}
-          </span>
-        </div>
-        <div class="editable-table__cell editable-table__cell--action">
-          <button
-            class="editable-table__remove"
-            :disabled="modelValue.length <= 1"
-            :title="
-              modelValue.length <= 1
-                ? 'Cannot remove last item'
-                : 'Remove item'
-            "
-            @click="removeRow(item.id)"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
+      </TransitionGroup>
     </div>
 
     <!-- Add item button -->
@@ -346,5 +348,40 @@ function updateItem(
 .editable-table__add:hover {
   border-color: var(--color-rust);
   background: rgba(196, 98, 45, 0.04);
+}
+
+/* ---------------------------------------------------------------------------
+   TransitionGroup — line item add/remove animations
+   --------------------------------------------------------------------------- */
+.editable-table__rows {
+  position: relative;
+}
+
+/* Enter: fade in + slide down */
+.line-item-enter-active {
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+/* Leave: fade out + slide up, position absolute to prevent layout jump */
+.line-item-leave-active {
+  transition: opacity 200ms ease-in, transform 200ms ease-in;
+  position: absolute;
+  width: 100%;
+  left: 0;
+}
+
+/* Move: smooth sibling reflow */
+.line-item-move {
+  transition: transform 200ms ease;
+}
+
+.line-item-enter-from {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+.line-item-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
 }
 </style>
