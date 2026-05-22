@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoicy — Invoice Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- MODERNIZED DESIGN LAYER
+     Replace ONLY your existing <style> block with this.
+     Keeps all functionality + JS intact.
+-->
+
+<style>
+/* ─────────────────────────────────────
+   MODERN TOKENS
+───────────────────────────────────── */
+:root{
+  --bg:#f4f7fb;
+  --panel:rgba(255,255,255,0.78);
+  --panel-solid:#ffffff;
+
+  --text-primary:#0f172a;
+  --text-secondary:#475569;
+  --text-muted:#94a3b8;
+
+  --border:rgba(15,23,42,0.07);
+  --border-strong:rgba(15,23,42,0.12);
+
+  --accent:#6366f1;
+  --accent-hover:#5855eb;
+  --accent-soft:#eef2ff;
+
+  --success:#10b981;
+  --warning:#f59e0b;
+  --error:#ef4444;
+
+  --sidebar-w:400px;
+
+  --radius-sm:14px;
+  --radius-md:20px;
+  --radius-lg:28px;
+
+  --shadow-sm:
+    0 2px 8px rgba(15,23,42,0.04);
+
+  --shadow-md:
+    0 10px 30px rgba(15,23,42,0.06),
+    0 2px 10px rgba(15,23,42,0.04);
+
+  --shadow-lg:
+    0 20px 60px rgba(15,23,42,0.08),
+    0 4px 20px rgba(15,23,42,0.04);
+
+  --font-sans:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+
+  --font-mono:
+    ui-monospace,
+    SFMono-Regular,
+    monospace;
+}
+
+/* ─────────────────────────────────────
+   RESET
+───────────────────────────────────── */
+
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,
+body{
+  height:100%;
+}
+
+body{
+  font-family:var(--font-sans);
+
+  background:
+    radial-gradient(circle at top left,#eef2ff 0%,transparent 30%),
+    radial-gradient(circle at bottom right,#e0f2fe 0%,transparent 35%),
+    var(--bg);
+
+  color:var(--text-primary);
+
+  overflow:hidden;
+}
+
+button{
+  cursor:pointer;
+  font-family:inherit;
+}
+
+input,
+textarea,
+select{
+  font-family:inherit;
+}
+
+input[type="number"]::-webkit-inner-spin-button{
+  opacity:0.4;
+}
+
+/* ─────────────────────────────────────
+   LAYOUT
+───────────────────────────────────── */
+
+.app{
+  display:grid;
+  grid-template-columns:var(--sidebar-w) 1fr;
+  height:100vh;
+}
+
+/* ─────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────── */
+
+.sidebar{
+  padding:22px;
+  background:transparent;
+  border-right:1px solid var(--border);
+}
+
+.sidebar{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.sidebar{
+  position:relative;
+}
+
+.sidebar::before{
+  content:"";
+  position:absolute;
+  inset:22px;
+
+  background:var(--panel);
+
+  border:
+    1px solid rgba(255,255,255,0.7);
+
+  border-radius:32px;
+
+  backdrop-filter:blur(24px);
+
+  box-shadow:var(--shadow-md);
+
+  z-index:0;
+}
+
+.sidebar > *{
+  position:relative;
+  z-index:1;
+}
+
+.sidebar-header{
+  padding:30px 30px 22px;
+  border-bottom:1px solid var(--border);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-0.04em;
+
+  color:var(--text-primary);
+}
+
+.brand-dot{
+  width:12px;
+  height:12px;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #818cf8,
+      #6366f1
+    );
+
+  box-shadow:
+    0 0 18px rgba(99,102,241,0.45);
+}
+
+.brand-sub{
+  margin-top:8px;
+
+  font-size:14px;
+  color:var(--text-muted);
+}
+
+/* ─────────────────────────────────────
+   TABS
+───────────────────────────────────── */
+
+.tabs{
+  display:flex;
+  gap:8px;
+
+  padding:18px 24px 0;
+}
+
+.tab-btn{
+  flex:1;
+
+  border:none;
+
+  background:transparent;
+
+  padding:14px 18px;
+
+  border-radius:16px;
+
+  font-size:14px;
+  font-weight:600;
+
+  color:var(--text-muted);
+
+  transition:0.2s ease;
+}
+
+.tab-btn:hover{
+  background:rgba(255,255,255,0.7);
+  color:var(--text-primary);
+}
+
+.tab-btn.active{
+  background:white;
+  color:var(--text-primary);
+
+  box-shadow:var(--shadow-sm);
+}
+
+/* ─────────────────────────────────────
+   SIDEBAR BODY
+───────────────────────────────────── */
+
+.sidebar-body{
+  flex:1;
+
+  overflow-y:auto;
+
+  padding:
+    26px
+    30px
+    130px;
+}
+
+.sidebar-body::-webkit-scrollbar{
+  width:6px;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb{
+  background:rgba(15,23,42,0.1);
+  border-radius:999px;
+}
+
+.tab-pane{
+  display:none;
+}
+
+.tab-pane.active{
+  display:block;
+}
+
+/* ─────────────────────────────────────
+   SECTION
+───────────────────────────────────── */
+
+.section-label{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  margin:
+    32px
+    0
+    18px;
+
+  font-size:14px;
+  font-weight:700;
+
+  color:var(--text-primary);
+
+  letter-spacing:-0.02em;
+}
+
+.section-label:first-child{
+  margin-top:0;
+}
+
+.section-label::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+/* ─────────────────────────────────────
+   FIELDS
+───────────────────────────────────── */
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  display:block;
+
+  margin-bottom:8px;
+
+  font-size:13px;
+  font-weight:600;
+
+  color:var(--text-secondary);
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+
+  background:
+    rgba(255,255,255,0.9);
+
+  border:
+    1px solid transparent;
+
+  border-radius:18px;
+
+  padding:
+    15px
+    16px;
+
+  color:var(--text-primary);
+
+  font-size:14px;
+
+  outline:none;
+
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
+}
+
+.field input::placeholder,
+.field textarea::placeholder{
+  color:#b0b8c5;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:
+    rgba(99,102,241,0.35);
+
+  box-shadow:
+    0 0 0 4px rgba(99,102,241,0.08);
+}
+
+.field textarea{
+  resize:vertical;
+  min-height:90px;
+  line-height:1.7;
+}
+
+.field-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.field-row-3{
+  display:grid;
+  grid-template-columns:1fr 90px 110px;
+  gap:12px;
+}
+
+/* ─────────────────────────────────────
+   LOGO UPLOAD
+───────────────────────────────────── */
+
+.logo-upload-zone{
+  border:
+    1.5px dashed rgba(99,102,241,0.25);
+
+  background:
+    rgba(255,255,255,0.55);
+
+  border-radius:22px;
+
+  padding:28px;
+
+  text-align:center;
+
+  transition:0.2s ease;
+
+  position:relative;
+}
+
+.logo-upload-zone:hover,
+.logo-upload-zone.drag-over{
+  border-color:var(--accent);
+
+  background:
+    rgba(238,242,255,0.8);
+}
+
+.logo-upload-zone input[type=file]{
+  position:absolute;
+  inset:0;
+
+  opacity:0;
+
+  cursor:pointer;
+}
+
+.logo-upload-text{
+  font-size:14px;
+  color:var(--text-secondary);
+}
+
+.logo-upload-text span{
+  color:var(--accent);
+  font-weight:700;
+}
+
+.logo-preview-wrap{
+  display:none;
+  align-items:center;
+  gap:14px;
+
+  background:white;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:20px;
+
+  padding:16px;
+
+  box-shadow:var(--shadow-sm);
+}
+
+.logo-preview-wrap.visible{
+  display:flex;
+}
+
+.logo-preview-wrap img{
+  height:48px;
+  width:auto;
+
+  border-radius:12px;
+}
+
+.logo-preview-name{
+  flex:1;
+
+  font-size:14px;
+  font-weight:500;
+
+  color:var(--text-secondary);
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.logo-remove-btn{
+  border:none;
+  background:none;
+
+  font-size:20px;
+
+  color:var(--text-muted);
+
+  transition:0.15s;
+}
+
+.logo-remove-btn:hover{
+  color:var(--error);
+}
+
+/* ─────────────────────────────────────
+   LINE ITEMS
+───────────────────────────────────── */
+
+.items-header{
+  display:grid;
+
+  grid-template-columns:
+    1fr
+    60px
+    100px
+    90px
+    28px;
+
+  gap:8px;
+
+  padding:0 4px 12px;
+
+  color:var(--text-muted);
+
+  font-size:12px;
+  font-weight:600;
+}
+
+.item-row{
+  display:grid;
+
+  grid-template-columns:
+    1fr
+    60px
+    100px
+    90px
+    28px;
+
+  gap:8px;
+
+  margin-bottom:10px;
+
+  animation:rowIn 0.2s ease;
+}
+
+@keyframes rowIn{
+  from{
+    opacity:0;
+    transform:translateY(-6px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.item-row input{
+  background:white;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:16px;
+
+  padding:13px 14px;
+
+  font-size:14px;
+
+  transition:0.2s;
+}
+
+.item-row input:focus{
+  border-color:
+    rgba(99,102,241,0.35);
+
+  box-shadow:
+    0 0 0 4px rgba(99,102,241,0.08);
+}
+
+.item-row input[readonly]{
+  background:transparent;
+  border:none;
+
+  text-align:right;
+
+  font-weight:600;
+}
+
+.item-remove{
+  border:none;
+  background:none;
+
+  color:var(--text-muted);
+
+  font-size:20px;
+
+  transition:0.15s;
+}
+
+.item-remove:hover{
+  color:var(--error);
+}
+
+.add-item-btn{
+  width:100%;
+
+  border:none;
+
+  background:var(--accent-soft);
+
+  color:var(--accent);
+
+  border-radius:18px;
+
+  padding:16px;
+
+  margin-top:8px;
+
+  font-size:14px;
+  font-weight:700;
+
+  transition:0.2s ease;
+}
+
+.add-item-btn:hover{
+  background:#e0e7ff;
+  transform:translateY(-1px);
+}
+
+/* ─────────────────────────────────────
+   ACTION BAR
+───────────────────────────────────── */
+
+.sidebar-actions{
+  position:absolute;
+
+  left:30px;
+  right:30px;
+  bottom:28px;
+
+  display:flex;
+  gap:10px;
+
+  z-index:2;
+}
+
+/* ─────────────────────────────────────
+   BUTTONS
+───────────────────────────────────── */
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:8px;
+
+  border:none;
+
+  border-radius:18px;
+
+  padding:
+    15px
+    18px;
+
+  font-size:14px;
+  font-weight:700;
+
+  transition:0.2s ease;
+}
+
+.btn-primary{
+  background:
+    linear-gradient(
+      135deg,
+      #6366f1,
+      #4f46e5
+    );
+
+  color:white;
+
+  box-shadow:
+    0 10px 20px rgba(99,102,241,0.25);
+}
+
+.btn-primary:hover{
+  transform:translateY(-2px);
+}
+
+.btn-secondary{
+  background:white;
+  color:var(--text-primary);
+
+  border:
+    1px solid var(--border);
+}
+
+.btn-secondary:hover{
+  background:#f8fafc;
+}
+
+.btn-ghost{
+  background:
+    rgba(255,255,255,0.7);
+
+  color:var(--text-secondary);
+
+  border:
+    1px solid var(--border);
+}
+
+.btn-ghost:hover{
+  background:white;
+}
+
+/* ─────────────────────────────────────
+   PREVIEW PANEL
+───────────────────────────────────── */
+
+.preview-panel{
+  display:flex;
+  flex-direction:column;
+
+  overflow:hidden;
+}
+
+.preview-topbar{
+  padding:
+    28px
+    38px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.template-switcher{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.tpl-btn{
+  border:none;
+
+  background:
+    rgba(255,255,255,0.7);
+
+  color:var(--text-secondary);
+
+  border-radius:16px;
+
+  padding:
+    12px
+    18px;
+
+  font-size:13px;
+  font-weight:700;
+
+  transition:0.2s ease;
+}
+
+.tpl-btn:hover{
+  background:white;
+}
+
+.tpl-btn.active{
+  background:var(--text-primary);
+  color:white;
+
+  box-shadow:var(--shadow-sm);
+}
+
+.preview-scroll{
+  flex:1;
+
+  overflow:auto;
+
+  padding:
+    12px
+    42px
+    42px;
+
+  display:flex;
+  justify-content:center;
+}
+
+/* ─────────────────────────────────────
+   INVOICE PAPER
+───────────────────────────────────── */
+
+.invoice-paper{
+  width:794px;
+
+  min-height:560px;
+
+  background:white;
+
+  border-radius:34px;
+
+  overflow:hidden;
+
+  box-shadow:var(--shadow-lg);
+
+  transition:opacity 0.15s;
+
+  flex-shrink:0;
+}
+
+.invoice-paper.switching{
+  opacity:0;
+}
+
+/* ─────────────────────────────────────
+   TEMPLATE BASE IMPROVEMENTS
+───────────────────────────────────── */
+
+.tpl-classic,
+.tpl-minimal,
+.tpl-bold,
+.tpl-sidebar,
+.tpl-friendly{
+  color:var(--text-primary);
+
+  font-family:var(--font-sans);
+}
+
+/* ─────────────────────────────────────
+   CLASSIC TEMPLATE
+───────────────────────────────────── */
+
+.tpl-classic{
+  padding:56px;
+}
+
+.tpl-classic .inv-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+
+  margin-bottom:44px;
+}
+
+.tpl-classic .inv-title{
+  font-size:52px;
+  font-weight:800;
+
+  letter-spacing:-0.05em;
+}
+
+.tpl-classic .inv-number{
+  margin-top:10px;
+
+  font-size:15px;
+  font-weight:700;
+
+  color:var(--text-secondary);
+}
+
+.tpl-classic .inv-dates{
+  margin-top:10px;
+
+  line-height:1.8;
+
+  color:var(--text-muted);
+}
+
+.tpl-classic .inv-parties{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  gap:20px;
+
+  margin-bottom:42px;
+}
+
+.tpl-classic .party-label{
+  margin-bottom:12px;
+
+  font-size:12px;
+  font-weight:700;
+
+  color:var(--text-muted);
+}
+
+.tpl-classic .party-name{
+  font-size:18px;
+  font-weight:800;
+
+  margin-bottom:8px;
+}
+
+.tpl-classic .party-detail{
+  line-height:1.8;
+
+  color:var(--text-secondary);
+}
+
+.tpl-classic .inv-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.tpl-classic .inv-table thead th{
+  text-align:left;
+
+  padding-bottom:16px;
+
+  font-size:13px;
+  font-weight:700;
+
+  color:var(--text-muted);
+}
+
+.tpl-classic .inv-table tbody td{
+  padding:20px 0;
+
+  border-top:
+    1px solid #f1f5f9;
+}
+
+.tpl-classic .inv-table tbody td:last-child,
+.tpl-classic .inv-table thead th:last-child{
+  text-align:right;
+}
+
+.tpl-classic .inv-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+
+  margin-top:40px;
+}
+
+.tpl-classic .inv-totals{
+  width:300px;
+}
+
+.tpl-classic .inv-total-row{
+  display:flex;
+  justify-content:space-between;
+
+  padding:10px 0;
+
+  color:var(--text-secondary);
+}
+
+.tpl-classic .inv-total-row.grand{
+  margin-top:14px;
+  padding-top:18px;
+
+  border-top:
+    2px solid #e2e8f0;
+
+  font-size:28px;
+  font-weight:800;
+
+  color:var(--text-primary);
+}
+
+/* ─────────────────────────────────────
+   HISTORY
+───────────────────────────────────── */
+
+.history-item{
+  background:white;
+
+  border:
+    1px solid var(--border);
+
+  border-radius:22px;
+
+  padding:18px;
+
+  margin-bottom:12px;
+
+  transition:0.2s ease;
+
+  box-shadow:var(--shadow-sm);
+}
+
+.history-item:hover{
+  transform:translateY(-2px);
+}
+
+.history-item-num{
+  font-size:13px;
+  font-weight:700;
+
+  color:var(--accent);
+
+  margin-bottom:8px;
+}
+
+.history-item-client{
+  font-size:16px;
+  font-weight:700;
+
+  margin-bottom:6px;
+}
+
+.history-item-meta{
+  display:flex;
+  justify-content:space-between;
+
+  font-size:13px;
+
+  color:var(--text-muted);
+}
+
+/* ─────────────────────────────────────
+   TOAST
+───────────────────────────────────── */
+
+.toast{
+  background:white;
+
+  border-radius:20px;
+
+  padding:16px 18px;
+
+  box-shadow:var(--shadow-md);
+
+  border:
+    1px solid var(--border);
+
+  color:var(--text-primary);
+
+  font-size:14px;
+  font-weight:600;
+}
+
+/* ─────────────────────────────────────
+   MODAL
+───────────────────────────────────── */
+
+.modal{
+  background:white;
+
+  border-radius:30px;
+
+  padding:34px;
+
+  box-shadow:var(--shadow-lg);
+}
+
+.modal-title{
+  font-size:28px;
+  font-weight:800;
+
+  letter-spacing:-0.04em;
+
+  margin-bottom:12px;
+}
+
+.modal-body{
+  line-height:1.8;
+
+  color:var(--text-secondary);
+
+  margin-bottom:28px;
+}
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media(max-width:1100px){
+
+  body{
+    overflow:auto;
+  }
+
+  .app{
+    grid-template-columns:1fr;
+    height:auto;
+  }
+
+  .sidebar{
+    min-height:100vh;
+  }
+
+  .preview-panel{
+    min-height:100vh;
+  }
+
+  .preview-scroll{
+    padding:0 20px 30px;
+  }
+
+  .invoice-paper{
+    width:100%;
+  }
+
+  .tpl-classic .inv-parties{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ─────────────────────────────────────
+   PRINT
+───────────────────────────────────── */
+
+@media print{
+
+  .sidebar,
+  .preview-topbar{
+    display:none !important;
+  }
+
+  .app{
+    display:block;
+  }
+
+  .preview-scroll{
+    padding:0;
+  }
+
+  .invoice-paper{
+    width:100%;
+    box-shadow:none;
+    border-radius:0;
+  }
+
+  @page{
+    size:A4;
+    margin:0;
+  }
+}
+</style>
+
+</head>
+<body>
+
+<div class="app">
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="sidebar" style="position:relative;">
+    <div class="sidebar-header">
+      <div class="brand"><span class="brand-dot"></span> Invoicy</div>
+      <div class="brand-sub">Invoice Generator</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('editor')">Editor</button>
+      <button class="tab-btn" onclick="switchTab('history')">History</button>
+    </div>
+
+    <div class="sidebar-body">
+      <!-- EDITOR TAB -->
+      <div class="tab-pane active" id="tab-editor">
+
+        <div class="section-label">Logo</div>
+        <div class="logo-upload-zone" id="logo-zone" ondragover="handleLogoDrag(event)" ondrop="handleLogoDrop(event)">
+          <input type="file" id="logo-file-input" accept="image/*" onchange="handleLogoFile(event)">
+          <div class="logo-upload-text">Drop image or <span>click to upload</span></div>
+        </div>
+        <div class="logo-preview-wrap" id="logo-preview">
+          <img id="logo-preview-img" src="" alt="logo">
+          <span class="logo-preview-name" id="logo-preview-name">logo.png</span>
+          <button class="logo-remove-btn" onclick="removeLogo()">×</button>
+        </div>
+
+        <div class="section-label">From</div>
+        <div class="field"><label>Name / Business</label><input type="text" id="from-name" placeholder="Jane Doe" oninput="updatePreview()"></div>
+        <div class="field"><label>Address</label><textarea id="from-address" rows="2" placeholder="123 Main St, Jakarta" oninput="updatePreview()"></textarea></div>
+        <div class="field-row">
+          <div class="field"><label>Email</label><input type="email" id="from-email" placeholder="jane@email.com" oninput="updatePreview()"></div>
+          <div class="field"><label>Phone</label><input type="text" id="from-phone" placeholder="+62 812..." oninput="updatePreview()"></div>
+        </div>
+        <div class="field"><label>Website</label><input type="text" id="from-website" placeholder="janedoe.com" oninput="updatePreview()"></div>
+
+        <div class="section-label">To</div>
+        <div class="field"><label>Client Name / Company</label><input type="text" id="to-name" placeholder="Acme Corp" oninput="updatePreview()"></div>
+        <div class="field"><label>Address</label><textarea id="to-address" rows="2" placeholder="456 Business Ave" oninput="updatePreview()"></textarea></div>
+        <div class="field"><label>Email</label><input type="email" id="to-email" placeholder="billing@acme.com" oninput="updatePreview()"></div>
+
+        <div class="section-label">Invoice</div>
+        <div class="field-row">
+          <div class="field"><label>Invoice #</label><input type="text" id="inv-number" value="INV-001" oninput="updatePreview()"></div>
+          <div class="field"><label>Currency</label>
+            <select id="inv-currency" onchange="updatePreview()">
+              <option>USD</option><option>EUR</option><option>GBP</option>
+              <option selected>IDR</option><option>SGD</option><option>MYR</option>
+              <option>AUD</option><option>JPY</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Issue Date</label><input type="date" id="inv-issue" oninput="updatePreview()"></div>
+          <div class="field"><label>Due Date</label><input type="date" id="inv-due" oninput="updatePreview()"></div>
+        </div>
+
+        <div class="section-label">Line Items</div>
+        <div class="items-header">
+          <span>Description</span><span style="text-align:right">Qty</span>
+          <span style="text-align:right">Unit Price</span><span style="text-align:right">Amount</span><span></span>
+        </div>
+        <div id="items-list"></div>
+        <button class="add-item-btn" onclick="addItem()">+ Add Item</button>
+
+        <div class="section-label">Totals</div>
+        <div class="field-row">
+          <div class="field"><label>Discount %</label><input type="number" id="discount" value="0" min="0" max="100" oninput="updatePreview()"></div>
+          <div class="field"><label>Tax Label</label><input type="text" id="tax-label" value="VAT" oninput="updatePreview()"></div>
+        </div>
+        <div class="field"><label>Tax %</label><input type="number" id="tax-rate" value="11" min="0" max="100" oninput="updatePreview()"></div>
+
+        <div class="section-label">Notes</div>
+        <div class="field"><textarea id="notes" rows="3" placeholder="Payment terms, bank details, thank you..." oninput="updatePreview()"></textarea></div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div class="tab-pane" id="tab-history">
+        <div id="history-list">
+          <div class="history-empty">No invoices yet.<br>Create or upload one.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar sticky actions -->
+    <div class="sidebar-actions">
+      <button class="btn btn-ghost" onclick="triggerJsonUpload()">↑ Upload JSON</button>
+      <button class="btn btn-primary" onclick="downloadJson()" id="dl-json-btn">↓ JSON</button>
+      <button class="btn btn-secondary" onclick="printInvoice()">⎙ PDF</button>
+      <button class="btn btn-ghost" onclick="newInvoice()">+ New</button>
+    </div>
+  </aside>
+
+  <!-- ══════════════ PREVIEW PANEL ══════════════ -->
+  <main class="preview-panel">
+    <div class="preview-topbar">
+      <div class="template-switcher">
+        <button class="tpl-btn active" onclick="setTemplate('classic')">Classic</button>
+        <button class="tpl-btn" onclick="setTemplate('minimal')">Minimal</button>
+        <button class="tpl-btn" onclick="setTemplate('bold')">Bold</button>
+        <button class="tpl-btn" onclick="setTemplate('sidebar')">Sidebar</button>
+        <button class="tpl-btn" onclick="setTemplate('friendly')">Friendly</button>
+      </div>
+      <div class="preview-actions">
+        <label class="btn btn-ghost" style="cursor:pointer;">
+          ↑ Upload JSON
+          <input type="file" id="json-upload-input" accept=".json" onchange="handleJsonUpload(event)" style="display:none">
+        </label>
+      </div>
+    </div>
+    <div class="preview-scroll">
+      <div class="invoice-paper" id="invoice-paper">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="new-invoice-modal">
+  <div class="modal">
+    <div class="modal-title">Unsaved changes</div>
+    <div class="modal-body">You have unsaved changes. Download your current invoice as JSON before starting a new one?</div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="downloadJson(); resetForm(); closeModal()">Download & Continue</button>
+      <button class="btn btn-secondary" onclick="resetForm(); closeModal()">Discard & Continue</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let state = {
+  template: 'classic',
+  logoData: null,
+  logoName: '',
+  items: [],
+  history: [],
+  isDirty: false,
+  nextItemId: 1,
+  nextInvNum: 1,
+};
+
+const CURRENCIES = {
+  USD: { symbol: '$', locale: 'en-US' },
+  EUR: { symbol: '€', locale: 'de-DE' },
+  GBP: { symbol: '£', locale: 'en-GB' },
+  IDR: { symbol: 'Rp', locale: 'id-ID' },
+  SGD: { symbol: 'S$', locale: 'en-SG' },
+  MYR: { symbol: 'RM', locale: 'ms-MY' },
+  AUD: { symbol: 'A$', locale: 'en-AU' },
+  JPY: { symbol: '¥', locale: 'ja-JP' },
+};
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+function init() {
+  const today = new Date();
+  const due = new Date(today); due.setDate(due.getDate() + 30);
+  document.getElementById('inv-issue').value = fmt(today);
+  document.getElementById('inv-due').value = fmt(due);
+  addItem();
+  addItem();
+  updatePreview();
+}
+
+function fmt(d) {
+  return d.toISOString().split('T')[0];
+}
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ══════════════════════════════════════════
+//  TEMPLATES
+// ══════════════════════════════════════════
+function setTemplate(name) {
+  state.template = name;
+  document.querySelectorAll('.tpl-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase() === name);
+  });
+  const paper = document.getElementById('invoice-paper');
+  paper.classList.add('switching');
+  setTimeout(() => { renderPreview(); paper.classList.remove('switching'); }, 150);
+}
+
+// ══════════════════════════════════════════
+//  LOGO
+// ══════════════════════════════════════════
+function handleLogoDrag(e) {
+  e.preventDefault();
+  document.getElementById('logo-zone').classList.add('drag-over');
+}
+
+function handleLogoDrop(e) {
+  e.preventDefault();
+  document.getElementById('logo-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processLogo(file);
+}
+
+function handleLogoFile(e) {
+  const file = e.target.files[0];
+  if (file) processLogo(file);
+}
+
+function processLogo(file) {
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Logo is large (>2MB) — JSON file will be bigger', 'warning');
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    state.logoData = e.target.result;
+    state.logoName = file.name;
+    document.getElementById('logo-zone').style.display = 'none';
+    const prev = document.getElementById('logo-preview');
+    prev.classList.add('visible');
+    document.getElementById('logo-preview-img').src = state.logoData;
+    document.getElementById('logo-preview-name').textContent = file.name;
+    state.isDirty = true;
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+  state.logoData = null;
+  state.logoName = '';
+  document.getElementById('logo-zone').style.display = '';
+  document.getElementById('logo-preview').classList.remove('visible');
+  document.getElementById('logo-file-input').value = '';
+  state.isDirty = true;
+  updatePreview();
+}
+
+// ══════════════════════════════════════════
+//  LINE ITEMS
+// ══════════════════════════════════════════
+function addItem(desc = '', qty = 1, price = 0) {
+  const id = state.nextItemId++;
+  state.items.push({ id, desc, qty, price });
+  renderItemRow(state.items[state.items.length - 1]);
+  state.isDirty = true;
+  updatePreview();
+}
+
+function renderItemRow(item) {
+  const list = document.getElementById('items-list');
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = 'item-row-' + item.id;
+  row.innerHTML = `
+    <input type="text" placeholder="Description" value="${escHtml(item.desc)}" oninput="updateItem(${item.id}, 'desc', this.value)">
+    <input type="number" value="${item.qty}" min="0" step="1" oninput="updateItem(${item.id}, 'qty', this.value)">
+    <input type="number" value="${item.price || ''}" min="0" step="0.01" placeholder="0.00" oninput="updateItem(${item.id}, 'price', this.value)">
+    <input type="text" readonly value="${fmtAmount(item.qty * item.price)}">
+    <button class="item-remove" onclick="removeItem(${item.id})">×</button>
+  `;
+  list.appendChild(row);
+}
+
+function updateItem(id, field, value) {
+  const item = state.items.find(i => i.id === id);
+  if (!item) return;
+  if (field === 'qty' || field === 'price') item[field] = parseFloat(value) || 0;
+  else item[field] = value;
+  // update readonly amount field
+  const row = document.getElementById('item-row-' + id);
+  if (row) row.querySelector('input[readonly]').value = fmtAmount(item.qty * item.price);
+  state.isDirty = true;
+  updatePreview();
+}
+
+function removeItem(id) {
+  if (state.items.length === 1) { showToast('At least one item required', 'warning'); return; }
+  state.items = state.items.filter(i => i.id !== id);
+  const row = document.getElementById('item-row-' + id);
+  if (row) { row.style.opacity = '0'; row.style.transform = 'translateY(-6px)'; row.style.transition = 'all 0.15s'; setTimeout(() => row.remove(), 150); }
+  state.isDirty = true;
+  updatePreview();
+}
+
+// ══════════════════════════════════════════
+//  CALCULATIONS
+// ══════════════════════════════════════════
+function calcTotals() {
+  const subtotal = state.items.reduce((s, i) => s + (i.qty * i.price), 0);
+  const discPct = parseFloat(document.getElementById('discount').value) || 0;
+  const taxPct = parseFloat(document.getElementById('tax-rate').value) || 0;
+  const discAmt = subtotal * (discPct / 100);
+  const taxBase = subtotal - discAmt;
+  const taxAmt = taxBase * (taxPct / 100);
+  const total = taxBase + taxAmt;
+  return { subtotal, discPct, discAmt, taxPct, taxAmt, total };
+}
+
+// ══════════════════════════════════════════
+//  FORMATTING
+// ══════════════════════════════════════════
+function getCurrency() {
+  return document.getElementById('inv-currency').value || 'USD';
+}
+
+function fmtMoney(amount) {
+  const cur = getCurrency();
+  const info = CURRENCIES[cur] || CURRENCIES.USD;
+  if (cur === 'IDR' || cur === 'JPY') {
+    return info.symbol + Math.round(amount).toLocaleString('id-ID');
+  }
+  return info.symbol + amount.toLocaleString(info.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtAmount(amount) {
+  if (!amount) return '';
+  return fmtMoney(amount);
+}
+
+function escHtml(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function nl2br(str) {
+  return (str || '').replace(/\n/g, '<br>');
+}
+
+// ══════════════════════════════════════════
+//  GET FORM DATA
+// ══════════════════════════════════════════
+function getFormData() {
+  return {
+    schema_version: '1.0',
+    template: state.template,
+    meta: {
+      invoice_number: document.getElementById('inv-number').value || 'INV-001',
+      issue_date: document.getElementById('inv-issue').value,
+      due_date: document.getElementById('inv-due').value,
+      currency: getCurrency(),
+    },
+    from: {
+      name: document.getElementById('from-name').value,
+      address: document.getElementById('from-address').value,
+      email: document.getElementById('from-email').value,
+      phone: document.getElementById('from-phone').value,
+      website: document.getElementById('from-website').value,
+    },
+    to: {
+      name: document.getElementById('to-name').value,
+      address: document.getElementById('to-address').value,
+      email: document.getElementById('to-email').value,
+    },
+    logo: state.logoData ? { data: state.logoData, name: state.logoName } : null,
+    line_items: state.items.map(i => ({
+      id: 'item_' + i.id,
+      description: i.desc,
+      quantity: i.qty,
+      unit_price: i.price,
+      amount: i.qty * i.price,
+    })),
+    totals: calcTotals(),
+    tax_label: document.getElementById('tax-label').value || 'VAT',
+    notes: document.getElementById('notes').value,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+}
+
+// ══════════════════════════════════════════
+//  PREVIEW RENDER
+// ══════════════════════════════════════════
+let previewTimeout = null;
+function updatePreview() {
+  state.isDirty = true;
+  clearTimeout(previewTimeout);
+  previewTimeout = setTimeout(renderPreview, 80);
+}
+
+function renderPreview() {
+  const data = getFormData();
+  const paper = document.getElementById('invoice-paper');
+  const { subtotal, discPct, discAmt, taxPct, taxAmt, total } = data.totals;
+  const taxLabel = data.tax_label;
+  const cur = data.meta.currency;
+
+  const logoHtml = data.logo
+    ? `<img src="${data.logo.data}" alt="logo">`
+    : '';
+
+  const itemRows = data.line_items.map(item => ({
+    desc: item.description || '—',
+    qty: item.quantity,
+    price: item.unit_price,
+    amount: item.amount,
+  }));
+
+  const partyHtml = (party) => `
+    ${party.name ? `<div class="party-name">${escHtml(party.name)}</div>` : ''}
+    <div class="party-detail">
+      ${party.address ? nl2br(escHtml(party.address)) + '<br>' : ''}
+      ${party.email ? escHtml(party.email) + '<br>' : ''}
+      ${party.phone ? escHtml(party.phone) + '<br>' : ''}
+      ${party.website ? escHtml(party.website) : ''}
+    </div>
+  `;
+
+  const totalsRows = `
+    ${discPct > 0 ? `<div class="inv-total-row total-line"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+    ${taxPct > 0 ? `<div class="inv-total-row total-line"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+    <div class="inv-total-row total-line grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+  `;
+
+  const tableRows = (cls) => itemRows.map(r =>
+    `<tr>
+      <td>${escHtml(r.desc)}</td>
+      <td>${r.qty}</td>
+      <td>${fmtMoney(r.price)}</td>
+      <td>${fmtMoney(r.amount)}</td>
+    </tr>`
+  ).join('');
+
+  let html = '';
+
+  if (state.template === 'classic') {
+    html = `<div class="tpl-classic">
+      <div class="inv-top">
+        <div class="inv-logo">${logoHtml || '<div class="inv-logo-placeholder"></div>'}</div>
+        <div class="inv-title-block">
+          <div class="inv-title">Invoice</div>
+          <div class="inv-number">${escHtml(data.meta.invoice_number)}</div>
+          <div class="inv-dates">
+            Issued: ${data.meta.issue_date || '—'}<br>
+            Due: ${data.meta.due_date || '—'}
+          </div>
+        </div>
+      </div>
+      <div class="inv-parties">
+        <div><div class="party-label">From</div>${partyHtml(data.from)}</div>
+        <div><div class="party-label">Bill To</div>${partyHtml(data.to)}</div>
+      </div>
+      <table class="inv-table">
+        <thead><tr><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Amount</th></tr></thead>
+        <tbody>${tableRows()}</tbody>
+      </table>
+      <div class="inv-footer">
+        <div class="inv-notes">${data.notes ? `<div class="inv-notes-label">Notes</div>${nl2br(escHtml(data.notes))}` : ''}</div>
+        <div class="inv-totals">
+          <div class="inv-total-row"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+          ${discPct > 0 ? `<div class="inv-total-row"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+          ${taxPct > 0 ? `<div class="inv-total-row"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+          <div class="inv-total-row grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  else if (state.template === 'minimal') {
+    html = `<div class="tpl-minimal">
+      <div class="inv-top">
+        ${logoHtml ? `<div class="inv-logo-wrap">${logoHtml}</div>` : ''}
+        <div class="inv-title">Invoice</div>
+        <div class="inv-meta-row">
+          <span>${escHtml(data.meta.invoice_number)}</span>
+          <span>${data.meta.issue_date || ''}</span>
+        </div>
+      </div>
+      <div class="inv-parties">
+        <div><div class="party-label">From</div>${partyHtml(data.from)}</div>
+        <div><div class="party-label">To</div>${partyHtml(data.to)}</div>
+      </div>
+      <div class="inv-items">
+        ${itemRows.map(r => `
+          <div class="item-line">
+            <span class="item-desc">${escHtml(r.desc)}</span>
+            <span class="item-amount">${fmtMoney(r.amount)}</span>
+          </div>`).join('')}
+      </div>
+      <div class="inv-totals-block">
+        <div class="total-line"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+        ${discPct > 0 ? `<div class="total-line"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+        ${taxPct > 0 ? `<div class="total-line"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+        <div class="total-line grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+      </div>
+      ${data.notes ? `<div class="inv-notes">${nl2br(escHtml(data.notes))}</div>` : ''}
+      ${data.meta.due_date ? `<div class="inv-due">Due ${data.meta.due_date}</div>` : ''}
+    </div>`;
+  }
+
+  else if (state.template === 'bold') {
+    html = `<div class="tpl-bold">
+      <div class="inv-header-band">
+        <div class="inv-header-left">
+          ${logoHtml ? `<div class="inv-logo">${logoHtml}</div>` : `<div class="no-logo">${escHtml(data.from.name || 'Invoicy')}</div>`}
+        </div>
+        <div class="inv-header-right">
+          <div class="inv-title">Invoice</div>
+          <div class="inv-number">${escHtml(data.meta.invoice_number)}</div>
+        </div>
+      </div>
+      <div class="inv-rust-band">
+        <span>Issued <strong>${data.meta.issue_date || '—'}</strong></span>
+        <span>Due <strong>${data.meta.due_date || '—'}</strong></span>
+        <span>Currency <strong>${cur}</strong></span>
+      </div>
+      <div class="inv-body">
+        <div class="inv-parties">
+          <div><div class="party-label">From</div>${partyHtml(data.from)}</div>
+          <div><div class="party-label">Bill To</div>${partyHtml(data.to)}</div>
+        </div>
+        <table class="inv-table">
+          <thead><tr><th>Description</th><th style="text-align:right">Qty</th><th style="text-align:right">Unit Price</th><th style="text-align:right">Amount</th></tr></thead>
+          <tbody>${tableRows()}</tbody>
+        </table>
+        <div class="inv-footer">
+          <div class="inv-notes">${nl2br(escHtml(data.notes))}</div>
+          <div class="inv-totals">
+            <div class="total-row"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+            ${discPct > 0 ? `<div class="total-row"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+            ${taxPct > 0 ? `<div class="total-row"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+            <div class="total-row grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  else if (state.template === 'sidebar') {
+    html = `<div class="tpl-sidebar">
+      <div class="inv-sidebar-col">
+        ${logoHtml ? `<div class="inv-logo-wrap">${logoHtml}</div>` : ''}
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">From</div>
+          <div class="sidebar-name">${escHtml(data.from.name)}</div>
+          <div class="sidebar-detail">
+            ${nl2br(escHtml(data.from.address))}<br>
+            ${escHtml(data.from.email)}<br>
+            ${escHtml(data.from.phone || '')}
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <div class="sidebar-section-label">Currency</div>
+          <div class="sidebar-detail">${cur}</div>
+        </div>
+      </div>
+      <div class="inv-main-col">
+        <div class="inv-main-top">
+          <div class="inv-title">Invoice</div>
+          <div class="inv-meta">
+            <div class="inv-num">${escHtml(data.meta.invoice_number)}</div>
+            <div class="inv-dates">Issued: ${data.meta.issue_date || '—'}<br>Due: ${data.meta.due_date || '—'}</div>
+          </div>
+        </div>
+        <div class="bill-to-label">Billed To</div>
+        <div class="bill-to-name">${escHtml(data.to.name)}</div>
+        <div class="bill-to-detail">${nl2br(escHtml(data.to.address))}<br>${escHtml(data.to.email)}</div>
+        <table class="inv-table">
+          <thead><tr><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
+          <tbody>${itemRows.map(r => `<tr><td>${escHtml(r.desc)}<br><span style="font-size:10px;color:#8A8178">${r.qty} × ${fmtMoney(r.price)}</span></td><td>${fmtMoney(r.amount)}</td></tr>`).join('')}</tbody>
+        </table>
+        <div class="inv-totals">
+          <div class="total-line"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+          ${discPct > 0 ? `<div class="total-line"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+          ${taxPct > 0 ? `<div class="total-line"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+          <div class="total-line grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+        </div>
+        ${data.notes ? `<div class="inv-notes">${nl2br(escHtml(data.notes))}</div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  else if (state.template === 'friendly') {
+    html = `<div class="tpl-friendly">
+      <div class="inv-top">
+        <div class="inv-logo">${logoHtml || '<div style="width:60px"></div>'}</div>
+        <div>
+          <div class="inv-badge">
+            <span class="inv-badge-title">Invoice</span>
+            <span class="inv-badge-num">${escHtml(data.meta.invoice_number)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="inv-parties">
+        <div class="party-card">
+          <div class="party-label">From</div>
+          ${partyHtml(data.from)}
+        </div>
+        <div class="party-card">
+          <div class="party-label">Bill To</div>
+          ${partyHtml(data.to)}
+        </div>
+      </div>
+      <div class="inv-dates-strip">
+        <div class="date-item"><strong>${data.meta.issue_date || '—'}</strong>Issue Date</div>
+        <div class="date-item"><strong>${data.meta.due_date || '—'}</strong>Due Date</div>
+        <div class="date-item"><strong>${cur}</strong>Currency</div>
+      </div>
+      <div class="inv-items-card">
+        <div class="items-head">
+          <span>Description</span><span>Qty</span><span>Unit Price</span><span>Amount</span>
+        </div>
+        ${itemRows.map(r => `
+          <div class="item-row-inv">
+            <span>${escHtml(r.desc)}</span>
+            <span>${r.qty}</span>
+            <span>${fmtMoney(r.price)}</span>
+            <span>${fmtMoney(r.amount)}</span>
+          </div>`).join('')}
+      </div>
+      <div class="inv-totals">
+        <div class="total-line"><span>Subtotal</span><span>${fmtMoney(subtotal)}</span></div>
+        ${discPct > 0 ? `<div class="total-line"><span>Discount ${discPct}%</span><span>−${fmtMoney(discAmt)}</span></div>` : ''}
+        ${taxPct > 0 ? `<div class="total-line"><span>${escHtml(taxLabel)} ${taxPct}%</span><span>${fmtMoney(taxAmt)}</span></div>` : ''}
+        <div class="total-line grand"><span>Total</span><span>${fmtMoney(total)}</span></div>
+      </div>
+      ${data.notes ? `<div class="inv-notes">${nl2br(escHtml(data.notes))}</div>` : ''}
+    </div>`;
+  }
+
+  paper.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+//  JSON EXPORT
+// ══════════════════════════════════════════
+function downloadJson() {
+  const data = getFormData();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const clientName = (data.to.name || 'Invoice').replace(/[^a-zA-Z0-9]/g, '_');
+  a.href = url;
+  a.download = `${data.meta.invoice_number}_${clientName}_${data.meta.issue_date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  addToHistory(data);
+  state.isDirty = false;
+  const btn = document.getElementById('dl-json-btn');
+  btn.textContent = '✓ Saved';
+  setTimeout(() => btn.textContent = '↓ JSON', 2000);
+  showToast('Invoice downloaded as JSON ✓');
+}
+
+// ══════════════════════════════════════════
+//  JSON IMPORT
+// ══════════════════════════════════════════
+function triggerJsonUpload() {
+  document.getElementById('json-upload-input').click();
+}
+
+function handleJsonUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.schema_version) throw new Error('Not a valid invoice JSON');
+      loadInvoiceData(data);
+      addToHistory(data);
+      showToast('Invoice loaded ✓');
+    } catch (err) {
+      showToast("Couldn't read this file. Is it a valid invoice JSON?", 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function loadInvoiceData(data) {
+  // Template
+  if (data.template) setTemplate(data.template);
+
+  // Meta
+  if (data.meta) {
+    document.getElementById('inv-number').value = data.meta.invoice_number || '';
+    document.getElementById('inv-issue').value = data.meta.issue_date || '';
+    document.getElementById('inv-due').value = data.meta.due_date || '';
+    document.getElementById('inv-currency').value = data.meta.currency || 'USD';
+  }
+
+  // From
+  if (data.from) {
+    document.getElementById('from-name').value = data.from.name || '';
+    document.getElementById('from-address').value = data.from.address || '';
+    document.getElementById('from-email').value = data.from.email || '';
+    document.getElementById('from-phone').value = data.from.phone || '';
+    document.getElementById('from-website').value = data.from.website || '';
+  }
+
+  // To
+  if (data.to) {
+    document.getElementById('to-name').value = data.to.name || '';
+    document.getElementById('to-address').value = data.to.address || '';
+    document.getElementById('to-email').value = data.to.email || '';
+  }
+
+  // Logo
+  if (data.logo && data.logo.data) {
+    state.logoData = data.logo.data;
+    state.logoName = data.logo.name || 'logo';
+    document.getElementById('logo-zone').style.display = 'none';
+    const prev = document.getElementById('logo-preview');
+    prev.classList.add('visible');
+    document.getElementById('logo-preview-img').src = state.logoData;
+    document.getElementById('logo-preview-name').textContent = state.logoName;
+  } else {
+    removeLogo();
+  }
+
+  // Line Items
+  state.items = [];
+  document.getElementById('items-list').innerHTML = '';
+  if (data.line_items && data.line_items.length > 0) {
+    data.line_items.forEach(item => {
+      addItem(item.description || '', item.quantity || 1, item.unit_price || 0);
+    });
+  } else {
+    addItem();
+  }
+
+  // Totals
+  const totals = data.totals || {};
+  document.getElementById('discount').value = totals.discPct || 0;
+  document.getElementById('tax-rate').value = totals.taxPct || 0;
+  document.getElementById('tax-label').value = data.tax_label || 'VAT';
+
+  // Notes
+  document.getElementById('notes').value = data.notes || '';
+
+  state.isDirty = false;
+  updatePreview();
+  switchTabByName('editor');
+}
+
+function switchTabByName(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    const isTarget = (i === 0 && name === 'editor') || (i === 1 && name === 'history');
+    b.classList.toggle('active', isTarget);
+  });
+  document.getElementById('tab-editor').classList.toggle('active', name === 'editor');
+  document.getElementById('tab-history').classList.toggle('active', name === 'history');
+}
+
+// ══════════════════════════════════════════
+//  HISTORY
+// ══════════════════════════════════════════
+function addToHistory(data) {
+  const exists = state.history.findIndex(h => h.meta.invoice_number === data.meta.invoice_number);
+  if (exists > -1) state.history.splice(exists, 1);
+  state.history.unshift({ ...data });
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (state.history.length === 0) {
+    list.innerHTML = '<div class="history-empty">No invoices yet.<br>Create or upload one.</div>';
+    return;
+  }
+  list.innerHTML = state.history.map((inv, i) => {
+    const total = inv.totals ? fmtMoneyRaw(inv.totals.total, inv.meta.currency) : '—';
+    return `
+      <div class="history-item" onclick="loadInvoiceData(${JSON.stringify(inv).replace(/"/g, '&quot;')})">
+        <div class="history-item-num">${escHtml(inv.meta.invoice_number)}</div>
+        <div class="history-item-client">${escHtml(inv.to.name || 'No client')}</div>
+        <div class="history-item-meta">
+          <span>${inv.meta.issue_date || '—'}</span>
+          <span>${total}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function fmtMoneyRaw(amount, cur) {
+  const info = CURRENCIES[cur] || CURRENCIES.USD;
+  if (cur === 'IDR' || cur === 'JPY') return info.symbol + Math.round(amount).toLocaleString();
+  return info.symbol + (amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ══════════════════════════════════════════
+//  NEW INVOICE
+// ══════════════════════════════════════════
+function newInvoice() {
+  if (state.isDirty) {
+    document.getElementById('new-invoice-modal').classList.add('open');
+  } else {
+    resetForm();
+  }
+}
+
+function resetForm() {
+  // increment invoice number
+  state.nextInvNum++;
+  const pad = String(state.nextInvNum).padStart(3, '0');
+  document.getElementById('inv-number').value = `INV-${pad}`;
+
+  // reset dates
+  const today = new Date();
+  const due = new Date(today); due.setDate(due.getDate() + 30);
+  document.getElementById('inv-issue').value = fmt(today);
+  document.getElementById('inv-due').value = fmt(due);
+
+  // reset parties
+  ['from-name','from-address','from-email','from-phone','from-website',
+   'to-name','to-address','to-email','notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+
+  // reset logo
+  removeLogo();
+
+  // reset items
+  state.items = [];
+  document.getElementById('items-list').innerHTML = '';
+  addItem();
+  addItem();
+
+  // reset totals
+  document.getElementById('discount').value = 0;
+  document.getElementById('tax-rate').value = 11;
+  document.getElementById('tax-label').value = 'VAT';
+
+  state.isDirty = false;
+  updatePreview();
+}
+
+function closeModal() {
+  document.getElementById('new-invoice-modal').classList.remove('open');
+}
+
+// ══════════════════════════════════════════
+//  PRINT
+// ══════════════════════════════════════════
+function printInvoice() {
+  window.print();
+}
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+function showToast(msg, type = 'success') {
+  const icons = { success: '✓', error: '✕', warning: '⚠' };
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type !== 'success' ? type : ''}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type]}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s, transform 0.3s';
+    toast.style.opacity = '0'; toast.style.transform = 'translateY(8px)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// ══════════════════════════════════════════
+//  CLOSE MODAL ON OVERLAY CLICK
+// ══════════════════════════════════════════
+document.getElementById('new-invoice-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ══════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
