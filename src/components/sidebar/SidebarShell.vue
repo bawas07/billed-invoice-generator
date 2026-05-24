@@ -24,8 +24,8 @@ function setTab(tab: SidebarTab): void {
   -->
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <h1 class="sidebar__title">◆ invoicy</h1>
-      <p class="sidebar__subtitle">INVOICE GENERATOR</p>
+      <h1 class="sidebar__title">◆ Billed</h1>
+      <p class="sidebar__subtitle">by Bawas · INVOICE GENERATOR</p>
     </div>
     <nav class="sidebar__tabs">
       <button
