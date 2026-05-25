@@ -61,9 +61,9 @@ async function handleLogoSelect(file: File): Promise<void> {
 
   try {
     await logoUpload.handleLogoFile(file)
-    // Sync the converted base64 data to the invoice
+    // Sync the converted base64 data to the invoice (always left-aligned)
     invoice.invoice.value.logo = logoUpload.logoData.value
-      ? { data: logoUpload.logoData.value, position: invoice.invoice.value.logo?.position ?? 'left' }
+      ? { data: logoUpload.logoData.value }
       : null
   } catch (error) {
     toast.showToast(
@@ -79,18 +79,6 @@ async function handleLogoSelect(file: File): Promise<void> {
 function handleLogoRemove(): void {
   logoUpload.removeLogo()
   invoice.invoice.value.logo = null
-}
-
-/**
- * Toggle logo position between left and right.
- */
-function toggleLogoPosition(): void {
-  if (!invoice.invoice.value.logo) return
-  const current = invoice.invoice.value.logo.position
-  invoice.invoice.value.logo = {
-    ...invoice.invoice.value.logo,
-    position: current === 'left' ? 'right' : 'left',
-  }
 }
 </script>
 
@@ -108,16 +96,6 @@ function toggleLogoPosition(): void {
         @select="handleLogoSelect"
         @remove="handleLogoRemove"
       />
-      <div v-if="invoice.invoice.value.logo" class="invoice-form__logo-options">
-        <label class="invoice-form__checkbox">
-          <input
-            type="checkbox"
-            :checked="invoice.invoice.value.logo.position === 'right'"
-            @change="toggleLogoPosition"
-          />
-          <span>Right-aligned</span>
-        </label>
-      </div>
     </section>
 
     <!-- From (Sender) Section -->
@@ -299,17 +277,29 @@ function toggleLogoPosition(): void {
 }
 
 .invoice-form__divider {
-  border-top: 1px solid var(--color-border-ink);
+  border-top: 1px solid var(--color-border-dark);
   padding-top: var(--space-3);
   margin-bottom: var(--space-1);
 }
 
 .invoice-form__divider-label {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1.5px;
-  color: var(--color-text-muted);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: var(--color-coral);
   text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.invoice-form__divider-label::after {
+  content: '';
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  height: 1px;
+  width: 60px;
+  background: var(--color-border-dark);
 }
 
 .invoice-form__fields {
@@ -341,29 +331,29 @@ function toggleLogoPosition(): void {
 
 .invoice-form__totals-label {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1px;
-  color: var(--color-text-muted);
+  font-size: 9px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
+  color: var(--color-text-dim);
   padding-top: var(--space-2);
   flex-shrink: 0;
 }
 
 .invoice-form__totals-label--bold {
-  color: var(--color-cream);
+  color: var(--color-text-on-dark);
   font-size: var(--text-sm);
 }
 
 .invoice-form__totals-value {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  color: var(--color-cream);
+  color: var(--color-text-on-dark);
   white-space: nowrap;
   padding-top: var(--space-2);
 }
 
 .invoice-form__totals-value--muted {
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   font-size: var(--text-xs);
 }
 
@@ -380,24 +370,5 @@ function toggleLogoPosition(): void {
 
 .invoice-form__totals-tax > * {
   flex: 1;
-}
-
-.invoice-form__checkbox {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.invoice-form__checkbox input[type="checkbox"] {
-  accent-color: var(--color-rust);
-}
-
-.invoice-form__logo-options {
-  display: flex;
-  align-items: center;
 }
 </style>

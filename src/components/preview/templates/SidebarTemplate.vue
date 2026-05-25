@@ -23,12 +23,7 @@ const display = useInvoiceDisplay(props)
     <div class="sidebar-template__layout">
       <!-- Left Sidebar -->
       <aside class="sidebar-template__sidebar">
-        <div
-          class="sidebar-template__sidebar-logo"
-          :class="{
-            'sidebar-template__sidebar-logo--right': invoice.logo?.position === 'right',
-          }"
-        >
+        <div class="sidebar-template__sidebar-logo">
           <img
             v-if="display.hasLogo"
             :src="invoice.logo!.data"
@@ -158,7 +153,7 @@ const display = useInvoiceDisplay(props)
   .sidebar-template {
     width: 100%;
     min-height: 1123px;
-    background: var(--color-white);
+    background: var(--paper);
   }
 }
 
@@ -171,17 +166,13 @@ const display = useInvoiceDisplay(props)
 .sidebar-template__sidebar {
   width: 240px;
   flex-shrink: 0;
-  background: var(--color-cream);
+  background: var(--color-reef);
   padding: var(--space-8) var(--space-5);
-  border-right: 2px solid var(--color-rust);
+  border-right: 2px solid var(--color-border);
 }
 
 .sidebar-template__sidebar-logo {
   margin-bottom: var(--space-6);
-}
-
-.sidebar-template__sidebar-logo--right {
-  text-align: right;
 }
 
 .sidebar-template__logo {
@@ -194,7 +185,7 @@ const display = useInvoiceDisplay(props)
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: var(--color-coral-dark);
   margin: 0 0 var(--space-3);
 }
 
@@ -258,7 +249,7 @@ const display = useInvoiceDisplay(props)
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: var(--color-coral-dark);
   margin: 0 0 var(--space-2);
 }
 
@@ -360,7 +351,7 @@ const display = useInvoiceDisplay(props)
 
 .sidebar-template__totals-divider {
   border: none;
-  border-top: 2px solid var(--color-ink);
+  border-top: 2px solid var(--color-text-primary);
   margin: var(--space-2) 0;
 }
 

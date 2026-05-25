@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Print Stylesheet — @media print rules for A4 PDF output
+   Print Stylesheet — @media print rules for A4 PDF output (Karang Theme v2)
    Layer: styles
    ---------------------------------------------------------------------------
    Targets global class names set on component root elements.
@@ -9,7 +9,8 @@
      .sidebar            → SidebarShell.vue root
      .preview-panel      → PreviewPanel.vue root
      .template-switcher  → PreviewPanel.vue template-switcher bar
-      .action-bar         → preview/ActionBar.vue root
+     .action-bar         → preview/ActionBar.vue root (legacy, if still present)
+     .preview-topbar     → PreviewPanel.vue topbar
      .no-print           → any element that should be hidden
      .invoice            → template invoice card root
    --------------------------------------------------------------------------- */
@@ -20,10 +21,11 @@
 }
 
 @media print {
-  /* Hide sidebar */
+  /* Hide sidebar, topbar, template switcher, old action bar, and any no-print elements */
   .sidebar,
   .template-switcher,
   .action-bar,
+  .preview-topbar,
   .no-print {
     display: none !important;
   }

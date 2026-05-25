@@ -65,10 +65,13 @@ export interface Party {
  * It SHALL ONLY be rendered via `<img :src="logo.data" />`.
  * It MUST NOT be used with `v-html` or placed as inline SVG —
  * doing so creates an XSS vector.
+ *
+ * Logos are always left-aligned (v2 design). The `position` field
+ * was removed — existing exports with `position: 'right'` load
+ * gracefully as left-aligned.
  */
 export interface Logo {
   data: string
-  position: 'left' | 'right'
 }
 
 /** Invoice metadata — number, dates, currency */

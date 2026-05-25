@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Global Styles — CSS Reset + Base Layout
+   Global Styles — CSS Reset + Base Layout (Karang Theme v2)
    Layer: styles
    --------------------------------------------------------------------------- */
 
@@ -25,7 +25,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--color-text-primary);
-  background: var(--color-cream);
+  background: var(--color-reef);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -33,8 +33,8 @@ body {
 
 #app {
   height: 100vh;
-  overflow: hidden;
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
 }
 
 /* ---- Utility ---- */

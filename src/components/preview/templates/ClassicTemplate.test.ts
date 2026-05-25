@@ -131,7 +131,7 @@ describe('ClassicTemplate', () => {
 
   it('renders logo img when logo is set', () => {
     const invoice = createTestInvoice({
-      logo: { data: 'data:image/png;base64,iVBORw0KGgo=', position: 'left' },
+      logo: { data: 'data:image/png;base64,iVBORw0KGgo=' },
     })
     const wrapper = mount(ClassicTemplate, {
       props: { invoice },
@@ -290,7 +290,7 @@ describe('ClassicTemplate', () => {
 
     // Set logo
     const withLogo = createTestInvoice({
-      logo: { data: 'data:image/png;base64,iVBORw0KGgo=', position: 'left' },
+      logo: { data: 'data:image/png;base64,iVBORw0KGgo=' },
     })
     await wrapper.setProps({ invoice: withLogo })
 

@@ -1,29 +1,52 @@
 /* ---------------------------------------------------------------------------
-   Design Tokens — CSS Custom Properties
+   Design Tokens — CSS Custom Properties (Karang Theme v2)
    Layer: styles (zero dependencies)
    ---------------------------------------------------------------------------
-   16 color tokens · 3 typefaces · 7-step type scale · 4 weights
-   10-step spacing scale (4px base) · 3 border radii · 4 layout dimensions
+   22 color tokens · 3 typefaces · 7-step type scale · 4 weights
+   10-step spacing scale (4px base) · 3 border radii · 2 shadows
+   4 layout dimensions
    --------------------------------------------------------------------------- */
 
 :root {
   /* --------------------------------------------------------------------- */
-  /* 4.1 — Color Tokens (14 total)                                         */
+  /* 4.1 — Color Tokens (22 total — Karang palette)                        */
   /* --------------------------------------------------------------------- */
-  --color-cream: #F5F0E8;
-  --color-white: #FDFCFA;
-  --color-ink: #1A1614;
-  --color-text-primary: #1A1614;
-  --color-text-secondary: #4A4540;
-  --color-text-muted: #8A8178;
-  --color-rust: #C4622D;
-  --color-rust-light: #F0E8E0;
-  --color-rust-dark: #A0501F;
-  --color-border: #D9D2C5;
-  --color-border-ink: rgba(245, 240, 232, 0.12);
-  --color-success: #3D7A5A;
+  --color-reef: #E4F0EE;
+  --color-reef-mid: #D0E8E4;
+  --color-mangrove: #162E2A;
+  --color-mangrove-mid: #1E3C36;
+  --color-mangrove-lt: #24473F;
+  --color-coral: #E8734A;
+  --color-coral-dark: #C85D38;
+  --color-coral-pale: #FDEEE8;
+  --color-teal: #1B8A72;
+  --color-teal-lt: #C8E0DC;
+  --color-sand: #FDFFFE;
+
+  /* Text colors */
+  --color-text-primary: #162E2A;
+  --color-text-secondary: #2A4A44;
+  --color-text-muted: #5A8078;
+  --color-text-on-dark: #E4F0EE;
+  --color-text-dim: rgba(228, 240, 238, 0.42);
+
+  /* Border colors */
+  --color-border: #C0D8D4;
+  --color-border-dark: rgba(228, 240, 238, 0.10);
+  --color-border-dark-h: rgba(228, 240, 238, 0.22);
+
+  /* Feedback colors */
+  --color-success: #1B8A72;
   --color-warning: #B07D2A;
   --color-error: #C0392B;
+
+  /* --------------------------------------------------------------------- */
+  /* 4.1a — Semantic Aliases                                                 */
+  /* --------------------------------------------------------------------- */
+  --bg: var(--color-reef);
+  --sidebar-bg: var(--color-mangrove);
+  --accent: var(--color-coral);
+  --paper: var(--color-sand);
 
   /* --------------------------------------------------------------------- */
   /* 4.2 — Typography Tokens                                                */
@@ -63,14 +86,20 @@
   --space-16: 64px;
 
   /* Border radii */
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  --r-sm: 5px;
+  --r-md: 10px;
+  --r-lg: 16px;
+
+  /* Shadows */
+  --shadow-paper: 0 2px 8px rgba(22, 46, 42, 0.06),
+                  0 16px 48px rgba(22, 46, 42, 0.13),
+                  0 32px 80px rgba(22, 46, 42, 0.07);
+  --shadow-drop: 0 2px 14px rgba(22, 46, 42, 0.20);
 
   /* --------------------------------------------------------------------- */
   /* 4.4 — Layout Tokens                                                   */
   /* --------------------------------------------------------------------- */
-  --sidebar-width: 420px;
+  --sidebar-width: 410px;
   --preview-min-width: 600px;
   --invoice-max-width: 794px;
   --invoice-padding: 48px;

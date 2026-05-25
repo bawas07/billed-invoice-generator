@@ -110,6 +110,9 @@ describe('useInvoice', () => {
         },
       ]
 
+      // Set tax to 0 so test focuses on discount behavior
+      invoice.invoice.value.totals.tax_percent = 0
+
       // Trigger next tick for watch
       // Wait for watch and reset
       invoice.invoice.value.totals.discount_percent = 10

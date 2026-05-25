@@ -1,18 +1,11 @@
 <script setup lang="ts">
 // ---------------------------------------------------------------------------
-// ActionBar — Upload JSON, Download JSON, New Invoice, PDF buttons
+// SidebarActions — sticky bottom action bar: Upload, Download, PDF, New
 // Layer: components (depends on: Vue, injection keys)
 // ---------------------------------------------------------------------------
-// Wires to useJsonIO, useInvoice, useHistory, useTemplate, and useToast
-// composables injected via injection keys.
-//
-// M3 additions:
-// - Dirty-check modal on "New Invoice" when unsaved changes exist
-// - Auto-increment invoice number on new invoice
-// - History population on download and import
-// - Template sync on import
-// - Download button checkmark feedback with double-click guard
-// - Blank invoice# auto-filled to INV-001 on download
+// Injects JSON_IO_KEY, INVOICE_KEY, TOAST_KEY, HISTORY_KEY, TEMPLATE_KEY.
+// Provides Upload JSON, Download JSON, PDF, and New Invoice buttons with
+// dirty-check modal. Hidden file input for JSON upload.
 // ---------------------------------------------------------------------------
 
 import { inject, ref, onBeforeUnmount } from 'vue'
@@ -33,7 +26,7 @@ const _template = inject(TEMPLATE_KEY)
 
 if (!_jsonIO || !_toast || !_invoice || !_history || !_template) {
   throw new Error(
-    'ActionBar requires JSON_IO_KEY, TOAST_KEY, INVOICE_KEY, HISTORY_KEY, and TEMPLATE_KEY to be provided.',
+    'SidebarActions requires JSON_IO_KEY, TOAST_KEY, INVOICE_KEY, HISTORY_KEY, and TEMPLATE_KEY to be provided.',
   )
 }
 
@@ -45,9 +38,7 @@ const template = _template!
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
-// ---------------------------------------------------------------------------
-// 3c — Export state for download button feedback
-// ---------------------------------------------------------------------------
+// Export state for download button feedback
 type ExportState = 'idle' | 'done'
 const exportState = ref<ExportState>('idle')
 let exportTimer: ReturnType<typeof setTimeout> | null = null
@@ -56,35 +47,20 @@ onBeforeUnmount(() => {
   if (exportTimer) clearTimeout(exportTimer)
 })
 
-// ---------------------------------------------------------------------------
-// 3a — Dirty modal state
-// ---------------------------------------------------------------------------
+// Dirty modal state
 const showDirtyModal = ref(false)
 
-// ---------------------------------------------------------------------------
-// 3a.6 — Ensure invoice_number is non-empty before export
-// ---------------------------------------------------------------------------
 function ensureInvoiceNumber(): void {
   if (!invoice.invoice.value.meta.invoice_number?.trim()) {
     invoice.invoice.value.meta.invoice_number = 'INV-001'
   }
 }
 
-/**
- * 3b.2, 3c — Export JSON: auto-fill blank#, export, add to history, show
- * checkmark feedback.
- */
 function handleDownload(): void {
   try {
-    // Auto-fill blank invoice number before export
     ensureInvoiceNumber()
-
     jsonIO.exportJson(invoice.invoice.value)
-
-    // Add to history
     history.addToHistory(invoice.invoice.value)
-
-    // Show feedback
     toast.showToast('Invoice exported successfully.', 'success')
     exportState.value = 'done'
     if (exportTimer) clearTimeout(exportTimer)
@@ -97,17 +73,10 @@ function handleDownload(): void {
   }
 }
 
-/**
- * Open the file picker for JSON import.
- */
 function handleUploadClick(): void {
   fileInput.value?.click()
 }
 
-/**
- * 3b.3 — Handle file selected for import. Loads invoice, syncs template,
- * adds to history.
- */
 async function handleFileSelected(event: Event): Promise<void> {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
@@ -116,7 +85,6 @@ async function handleFileSelected(event: Event): Promise<void> {
   try {
     const data = await jsonIO.importJson(file)
 
-    // Handle unknown schema version with warning
     if (data.schema_version !== '1.0') {
       toast.showToast(
         `Unknown schema version "${data.schema_version}". Data may not load completely.`,
@@ -125,7 +93,6 @@ async function handleFileSelected(event: Event): Promise<void> {
       )
     }
 
-    // Load invoice, sync template, add to history
     invoice.loadInvoice(data)
     template.setTemplate(data.template)
     history.addToHistory(data)
@@ -138,14 +105,13 @@ async function handleFileSelected(event: Event): Promise<void> {
     )
   }
 
-  // Reset the input so selecting the same file again works
   target.value = ''
 }
 
-/**
- * 3a — Handle new invoice: check isDirty, show modal if dirty,
- * otherwise create new invoice immediately.
- */
+function handlePDF(): void {
+  window.print()
+}
+
 function handleNewInvoice(): void {
   if (invoice.isDirty.value) {
     showDirtyModal.value = true
@@ -154,9 +120,6 @@ function handleNewInvoice(): void {
   }
 }
 
-/**
- * 3a — Download unsaved changes, then create new invoice.
- */
 function handleDownloadAndContinue(): void {
   showDirtyModal.value = false
   try {
@@ -170,25 +133,16 @@ function handleDownloadAndContinue(): void {
   }
 }
 
-/**
- * 3a — Discard unsaved changes and create new invoice.
- */
 function handleDiscardAndContinue(): void {
   showDirtyModal.value = false
   toast.showToast('Changes discarded. New invoice created.', 'success')
   invoice.nextInvoiceNumber()
 }
 
-/**
- * 3a — Cancel new invoice creation, close modal.
- */
 function handleCancelNewInvoice(): void {
   showDirtyModal.value = false
 }
 
-/**
- * Create a new invoice via nextInvoiceNumber.
- */
 function createNewInvoice(): void {
   invoice.nextInvoiceNumber()
   toast.showToast('New invoice created.', 'success')
@@ -196,49 +150,34 @@ function createNewInvoice(): void {
 </script>
 
 <template>
-  <!--
-    Root element uses class="action-bar" for print.css targeting.
-    @media print hides .action-bar via print.css.
-  -->
-  <div class="action-bar">
+  <div class="sidebar-actions">
     <input
       ref="fileInput"
       type="file"
       accept=".json"
-      class="action-bar__file-input"
+      class="sidebar-actions__file-input"
       @change="handleFileSelected"
     />
 
-    <button
-      class="action-bar__btn action-bar__btn--upload"
-      @click="handleUploadClick"
-    >
+    <button class="btn btn-ghost" @click="handleUploadClick">
       Upload JSON
     </button>
     <button
-      class="action-bar__btn"
-      :class="[
-        exportState === 'done'
-          ? 'action-bar__btn--exported'
-          : 'action-bar__btn--download',
-      ]"
+      class="btn btn-primary"
       :disabled="exportState === 'done'"
       @click="handleDownload"
     >
       {{ exportState === 'done' ? '✓ Exported' : 'Download JSON' }}
     </button>
-    <button
-      class="action-bar__btn action-bar__btn--new"
-      @click="handleNewInvoice"
-    >
-      New Invoice
-    </button>
-    <button class="action-bar__btn action-bar__btn--pdf" disabled title="Coming in M4">
+    <button class="btn btn-secondary" @click="handlePDF">
       PDF
+    </button>
+    <button class="btn btn-ghost" @click="handleNewInvoice">
+      New Invoice
     </button>
   </div>
 
-  <!-- 3a — Dirty-check confirmation modal -->
+  <!-- Dirty-check confirmation modal -->
   <Modal
     :visible="showDirtyModal"
     title="Unsaved Changes"
@@ -260,68 +199,68 @@ function createNewInvoice(): void {
 </template>
 
 <style scoped>
-.action-bar {
+.sidebar-actions {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   align-items: center;
-  width: 100%;
+  flex-wrap: wrap;
 }
 
-.action-bar__file-input {
+.sidebar-actions__file-input {
   display: none;
 }
 
-.action-bar__btn {
+/* v2 button styles */
+.btn {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1px;
+  font-size: 9px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  padding: var(--space-2) var(--space-4);
+  padding: 8px 14px;
   border-radius: var(--r-sm);
-  border: 1px solid var(--color-border);
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  background: transparent;
-  color: var(--color-text-primary);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  font-weight: var(--weight-medium);
 }
 
-.action-bar__btn:hover:not(:disabled) {
-  background: var(--color-mangrove);
-  color: var(--color-text-on-dark);
-  border-color: var(--color-mangrove);
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
-.action-bar__btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.action-bar__btn--upload {
-  color: var(--color-text-muted);
-}
-
-.action-bar__btn--download {
-  color: var(--color-text-primary);
-}
-
-.action-bar__btn--new {
-  color: var(--color-error);
-}
-
-.action-bar__btn--pdf {
-  color: var(--color-text-muted);
-}
-
-/* 3c — Exported state with green checkmark feedback */
-.action-bar__btn--exported {
-  color: var(--color-success);
-  border-color: var(--color-success);
-  background: rgba(61, 122, 90, 0.06);
-}
-
-.action-bar__btn--exported:hover:not(:disabled) {
-  background: var(--color-success);
+/* Primary — coral fill */
+.btn-primary {
+  background: var(--color-coral);
   color: var(--color-sand);
-  border-color: var(--color-success);
+  border-color: var(--color-coral);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-coral-dark);
+  border-color: var(--color-coral-dark);
+}
+
+/* Secondary — coral border */
+.btn-secondary {
+  background: transparent;
+  color: var(--color-coral);
+  border-color: var(--color-coral);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(232, 115, 74, 0.12);
+}
+
+/* Ghost — dim */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-dim);
+  border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--color-text-on-dark);
+  background: rgba(228, 240, 238, 0.06);
 }
 </style>

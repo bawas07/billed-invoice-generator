@@ -56,31 +56,31 @@ function onInput(event: Event): void {
 
 .text-input__label {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  letter-spacing: 1px;
-  color: var(--color-text-muted);
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: var(--color-text-dim);
   text-transform: uppercase;
 }
 
 .text-input__field {
   font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-cream);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--color-border-ink);
-  border-radius: var(--border-radius-sm);
-  padding: var(--space-2) var(--space-3);
+  font-size: 13.5px;
+  color: var(--color-text-on-dark);
+  background: rgba(228, 240, 238, 0.07);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--r-sm);
+  padding: 11px 14px;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .text-input__field::placeholder {
-  color: var(--color-text-muted);
-  opacity: 0.5;
+  color: rgba(228, 240, 238, 0.18);
 }
 
 .text-input__field:focus {
-  border-color: var(--color-rust);
+  border-color: var(--color-coral);
+  background: rgba(228, 240, 238, 0.12);
 }
 
 .text-input__field--error {

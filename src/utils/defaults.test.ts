@@ -26,7 +26,7 @@ describe('createEmptyInvoice', () => {
     const invoice = createEmptyInvoice()
 
     expect(invoice.meta.invoice_number).toBe('INV-001')
-    expect(invoice.meta.currency).toBe('USD')
+    expect(invoice.meta.currency).toBe('IDR')
   })
 
   it('should set issue_date to today in YYYY-MM-DD format', () => {
@@ -59,12 +59,13 @@ describe('createEmptyInvoice', () => {
     expect(Math.abs(updatedAt - now)).toBeLessThan(1000)
   })
 
-  it('should generate a valid UUID for the first line item', () => {
+  it('should generate valid UUIDs for line items', () => {
     const invoice = createEmptyInvoice()
     const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-    expect(invoice.line_items).toHaveLength(1)
+    expect(invoice.line_items).toHaveLength(2)
     expect(invoice.line_items[0].id).toMatch(uuidPattern)
+    expect(invoice.line_items[1].id).toMatch(uuidPattern)
   })
 
   it('should start with zeroed totals', () => {
@@ -73,7 +74,7 @@ describe('createEmptyInvoice', () => {
     expect(invoice.totals.subtotal).toBe(0)
     expect(invoice.totals.discount_percent).toBe(0)
     expect(invoice.totals.discount_amount).toBe(0)
-    expect(invoice.totals.tax_percent).toBe(0)
+    expect(invoice.totals.tax_percent).toBe(11)
     expect(invoice.totals.tax_amount).toBe(0)
     expect(invoice.totals.total).toBe(0)
   })
@@ -83,14 +84,18 @@ describe('createEmptyInvoice', () => {
     expect(invoice.logo).toBeNull()
   })
 
-  it('should have one empty line item with defaults', () => {
+  it('should have two empty line items with defaults', () => {
     const invoice = createEmptyInvoice()
 
-    expect(invoice.line_items).toHaveLength(1)
+    expect(invoice.line_items).toHaveLength(2)
     expect(invoice.line_items[0].description).toBe('')
     expect(invoice.line_items[0].quantity).toBe(1)
     expect(invoice.line_items[0].unit_price).toBe(0)
     expect(invoice.line_items[0].amount).toBe(0)
+    expect(invoice.line_items[1].description).toBe('')
+    expect(invoice.line_items[1].quantity).toBe(1)
+    expect(invoice.line_items[1].unit_price).toBe(0)
+    expect(invoice.line_items[1].amount).toBe(0)
   })
 
   it('should return empty strings for from and to fields', () => {

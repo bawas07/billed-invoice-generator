@@ -53,8 +53,6 @@ const TEMPLATE_LABELS: Record<TemplateId, string> = {
 .template-switcher {
   display: flex;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
-  align-self: flex-start;
 }
 
 .template-pill {
@@ -62,28 +60,32 @@ const TEMPLATE_LABELS: Record<TemplateId, string> = {
   font-size: 11px;
   letter-spacing: 1px;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-md);
+  border-radius: 99px;
   border: 1px solid var(--color-border);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
 }
 
 .template-pill:hover {
-  border-color: var(--color-ink);
-  color: var(--color-text-primary);
+  background: var(--color-coral-pale);
+  color: var(--color-coral-dark);
+  border-color: var(--color-coral);
 }
 
 .template-pill--active {
-  background: var(--color-ink);
-  color: var(--color-cream);
-  border-color: var(--color-ink);
+  background: var(--color-mangrove);
+  color: var(--color-text-on-dark);
+  border-color: var(--color-mangrove);
+  box-shadow: 0 2px 10px rgba(22, 46, 42, 0.28);
 }
 
 .template-pill--active:hover {
-  background: var(--color-ink);
-  color: var(--color-cream);
-  border-color: var(--color-ink);
+  background: var(--color-mangrove);
+  color: var(--color-text-on-dark);
+  border-color: var(--color-mangrove);
 }
 </style>

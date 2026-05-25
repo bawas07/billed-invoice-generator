@@ -20,15 +20,10 @@ const display = useInvoiceDisplay(props)
 
 <template>
   <div class="invoice bold-template">
-    <!-- Full-width rust header band -->
+    <!-- Full-width mangrove header band -->
     <div class="bold-template__header">
       <div class="bold-template__header-content">
-        <div
-          class="bold-template__header-left"
-          :class="{
-            'bold-template__header-left--logo-right': invoice.logo?.position === 'right',
-          }"
-        >
+        <div class="bold-template__header-left">
           <img
             v-if="display.hasLogo"
             :src="invoice.logo!.data"
@@ -41,6 +36,19 @@ const display = useInvoiceDisplay(props)
           <p class="bold-template__invoice-number">{{ invoice.meta.invoice_number }}</p>
         </div>
       </div>
+    </div>
+
+    <!-- Coral metadata band -->
+    <div class="bold-template__cband">
+      <span class="bold-template__cband-item">
+        Issue Date: {{ display.formatDate(invoice.meta.issue_date) }}
+      </span>
+      <span class="bold-template__cband-item">
+        Due Date: {{ display.formatDate(invoice.meta.due_date) }}
+      </span>
+      <span class="bold-template__cband-item">
+        Currency: {{ invoice.meta.currency }}
+      </span>
     </div>
 
     <!-- Body -->
@@ -69,16 +77,6 @@ const display = useInvoiceDisplay(props)
             {{ invoice.to.email }}
           </p>
         </div>
-      </div>
-
-      <!-- Dates -->
-      <div class="bold-template__dates">
-        <span class="bold-template__dates-item">
-          Issued: {{ display.formatDate(invoice.meta.issue_date) }}
-        </span>
-        <span class="bold-template__dates-item">
-          Due: {{ display.formatDate(invoice.meta.due_date) }}
-        </span>
       </div>
 
       <!-- Line items table -->
@@ -165,14 +163,14 @@ const display = useInvoiceDisplay(props)
   .bold-template {
     width: 100%;
     min-height: 1123px;
-    background: var(--color-white);
+    background: var(--paper);
   }
 }
 
 /* ---- Header Band ---- */
 .bold-template__header {
-  background: var(--color-rust);
-  padding: var(--space-8) var(--invoice-padding);
+  background: var(--color-mangrove);
+  padding: var(--space-8) var(--invoice-padding) var(--space-6);
 }
 
 .bold-template__header-content {
@@ -185,16 +183,11 @@ const display = useInvoiceDisplay(props)
   flex: 1;
 }
 
-.bold-template__header-left--logo-right {
-  order: 2;
-  text-align: right;
-}
-
 .bold-template__logo {
   max-height: 60px;
   max-width: 200px;
   object-fit: contain;
-  filter: brightness(0) invert(1); /* Make logo white on rust background */
+  filter: brightness(0) invert(1); /* Make logo white on mangrove background */
 }
 
 .bold-template__header-right {
@@ -205,7 +198,7 @@ const display = useInvoiceDisplay(props)
 .bold-template__title {
   font-family: var(--font-serif);
   font-size: var(--text-xl);
-  color: var(--color-white);
+  color: var(--color-text-on-dark);
   margin: 0;
   line-height: 1.2;
 }
@@ -213,8 +206,24 @@ const display = useInvoiceDisplay(props)
 .bold-template__invoice-number {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(228, 240, 238, 0.8);
   margin: var(--space-1) 0 0;
+}
+
+/* ---- Coral Metadata Band ---- */
+.bold-template__cband {
+  display: flex;
+  gap: var(--space-8);
+  background: var(--color-coral);
+  padding: 10px 52px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-sand);
+}
+
+.bold-template__cband-item {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* ---- Body ---- */
@@ -255,16 +264,6 @@ const display = useInvoiceDisplay(props)
   line-height: 1.5;
 }
 
-/* ---- Dates ---- */
-.bold-template__dates {
-  display: flex;
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-
 /* ---- Table ---- */
 .bold-template__table {
   width: 100%;
@@ -276,7 +275,7 @@ const display = useInvoiceDisplay(props)
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-rust);
+  color: var(--color-coral);
   padding: var(--space-2) var(--space-2);
   text-align: left;
   font-weight: var(--weight-regular);
@@ -342,7 +341,7 @@ const display = useInvoiceDisplay(props)
 
 .bold-template__totals-divider {
   border: none;
-  border-top: 2px solid var(--color-ink);
+  border-top: 2px solid var(--color-text-primary);
   margin: var(--space-2) 0;
 }
 

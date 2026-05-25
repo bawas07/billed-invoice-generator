@@ -41,12 +41,12 @@ export function getNextInvoiceNumber(current: string): string {
  *
  * - `schema_version`: `'1.0'`
  * - `template`: `'classic'`
- * - `meta.currency`: `'USD'`
+ * - `meta.currency`: `'IDR'`
  * - `meta.invoice_number`: `'INV-001'`
  * - `issue_date`: today (YYYY-MM-DD)
  * - `due_date`: today + 30 days
- * - One empty line item with a UUID id
- * - Zeroed totals
+ * - Two empty line items with UUID ids
+ * - Zeroed totals, 11% PPN tax
  * - `logo: null`
  * - Empty string fields
  * - `created_at` and `updated_at`: current ISO 8601
@@ -61,7 +61,7 @@ export function createEmptyInvoice(): InvoiceData {
       invoice_number: 'INV-001',
       issue_date: format(now, 'yyyy-MM-dd'),
       due_date: format(addDays(now, 30), 'yyyy-MM-dd'),
-      currency: 'USD',
+      currency: 'IDR',
     },
     from: {
       name: '',
@@ -82,13 +82,20 @@ export function createEmptyInvoice(): InvoiceData {
         unit_price: 0,
         amount: 0,
       },
+      {
+        id: uuidv4(),
+        description: '',
+        quantity: 1,
+        unit_price: 0,
+        amount: 0,
+      },
     ],
     totals: {
       subtotal: 0,
       discount_percent: 0,
       discount_amount: 0,
-      tax_percent: 0,
-      tax_label: '',
+      tax_percent: 11,
+      tax_label: 'PPN',
       tax_amount: 0,
       total: 0,
     },

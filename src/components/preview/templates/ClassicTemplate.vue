@@ -21,12 +21,9 @@ const display = useInvoiceDisplay(props)
 
 <template>
   <div class="invoice classic-template">
-    <!-- Top: Logo (left/right) + Title + Invoice Number + Dates -->
+    <!-- Top: Logo + Title + Invoice Number + Dates -->
     <div class="classic-template__header">
-      <div
-        class="classic-template__header-left"
-        :class="{ 'classic-template__header-left--logo-right': invoice.logo?.position === 'right' }"
-      >
+      <div class="classic-template__header-left">
         <img
           v-if="display.hasLogo"
           :src="invoice.logo!.data"
@@ -163,9 +160,10 @@ const display = useInvoiceDisplay(props)
   .classic-template {
     width: 100%;
     min-height: 1123px;
-    background: var(--color-white);
+    background: var(--paper);
     padding: var(--invoice-padding);
-    border-top: 4px solid var(--color-rust);
+    border-top: 4px solid transparent;
+    border-image: linear-gradient(90deg, var(--color-coral), var(--color-teal)) 1;
   }
 }
 
@@ -179,11 +177,6 @@ const display = useInvoiceDisplay(props)
 
 .classic-template__header-left {
   flex: 1;
-}
-
-.classic-template__header-left--logo-right {
-  order: 2;
-  text-align: right;
 }
 
 .classic-template__logo {
@@ -246,7 +239,7 @@ const display = useInvoiceDisplay(props)
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: var(--color-coral);
   margin: 0 0 var(--space-2);
 }
 
@@ -280,10 +273,11 @@ const display = useInvoiceDisplay(props)
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: #5A8078;
   padding: var(--space-2) var(--space-2);
   text-align: left;
   font-weight: var(--weight-regular);
+  background: #EAF4F2;
 }
 
 .classic-template__table-header--desc {
@@ -345,7 +339,7 @@ const display = useInvoiceDisplay(props)
 
 .classic-template__totals-divider {
   border: none;
-  border-top: 2px solid var(--color-ink);
+  border-top: 2.5px solid var(--color-text-primary);
   margin: var(--space-2) 0;
 }
 

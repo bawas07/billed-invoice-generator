@@ -122,7 +122,7 @@ function onRemove(): void {
         Uploading...
       </span>
       <span v-else class="file-upload__prompt">
-        Drop an image here or click to browse
+        Drop an image here or <span class="file-upload__browse">browse</span>
       </span>
       <span class="file-upload__hint">PNG or JPEG</span>
     </div>
@@ -152,9 +152,9 @@ function onRemove(): void {
   position: relative;
   width: 120px;
   height: 80px;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--r-sm);
   overflow: hidden;
-  border: 1px solid var(--color-border-ink);
+  border: 1px solid var(--color-border-dark);
 }
 
 .file-upload__image {
@@ -173,7 +173,7 @@ function onRemove(): void {
   border-radius: 50%;
   border: none;
   background: rgba(0, 0, 0, 0.6);
-  color: var(--color-white);
+  color: var(--color-sand);
   font-size: 10px;
   cursor: pointer;
   display: flex;
@@ -187,28 +187,29 @@ function onRemove(): void {
   opacity: 1;
 }
 
+/* v2 logo-zone dropzone */
 .file-upload__dropzone {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  padding: var(--space-6) var(--space-4);
-  border: 1px dashed var(--color-border-ink);
-  border-radius: var(--border-radius-sm);
+  padding: 15px;
+  border: 1.5px dashed var(--color-border-dark);
+  border-radius: var(--r-md);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
   min-height: 80px;
 }
 
 .file-upload__dropzone:hover {
-  border-color: var(--color-rust);
-  background: rgba(196, 98, 45, 0.04);
+  border-color: var(--color-coral);
+  background: rgba(232, 115, 74, 0.05);
 }
 
 .file-upload__dropzone--dragging {
-  border-color: var(--color-rust);
-  background: rgba(196, 98, 45, 0.08);
+  border-color: var(--color-coral);
+  background: rgba(232, 115, 74, 0.08);
 }
 
 .file-upload__dropzone--loading {
@@ -217,22 +218,26 @@ function onRemove(): void {
 }
 
 .file-upload__prompt {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
   text-align: center;
+}
+
+.file-upload__browse {
+  color: var(--color-coral);
 }
 
 .file-upload__hint {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   opacity: 0.5;
 }
 
 .file-upload__loading {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
 }
 </style>

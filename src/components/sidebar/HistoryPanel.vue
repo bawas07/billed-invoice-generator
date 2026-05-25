@@ -180,10 +180,11 @@ function formatDate(dateStr: string): string {
 }
 
 .history-panel__empty-text {
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
   text-align: center;
+  line-height: 1.6;
 }
 
 /* ---------------------------------------------------------------------------
@@ -192,30 +193,45 @@ function formatDate(dateStr: string): string {
 .history-panel__list {
   display: flex;
   flex-direction: column;
+  gap: 7px;
 }
 
 /* ---------------------------------------------------------------------------
-   History entry — clickable row with hover effect
+   History entry — card with hover left-bar animation
    --------------------------------------------------------------------------- */
 .history-panel__entry {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-3) var(--space-2);
-  border-left: 3px solid transparent;
+  padding: 12px 14px;
   cursor: pointer;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--r-md);
   transition: border-color 0.15s ease, background 0.15s ease;
-  border-bottom: 1px solid var(--color-border-ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.history-panel__entry::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--color-coral);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+  transform-origin: top;
+}
+
+.history-panel__entry:hover::before {
+  transform: scaleY(1);
 }
 
 .history-panel__entry:hover {
-  border-left-color: var(--color-rust);
-  background: rgba(196, 98, 45, 0.06);
-  padding-left: var(--space-2); /* prevent layout shift when border appears */
-}
-
-.history-panel__entry:last-child {
-  border-bottom: none;
+  background: rgba(228, 240, 238, 0.04);
+  border-color: var(--color-border-dark-h);
 }
 
 .history-panel__entry-info {
@@ -226,10 +242,9 @@ function formatDate(dateStr: string): string {
 }
 
 .history-panel__entry-number {
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: var(--weight-medium);
-  color: var(--color-cream);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--color-coral);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -237,8 +252,9 @@ function formatDate(dateStr: string): string {
 
 .history-panel__entry-client {
   font-family: var(--font-sans);
-  font-size: 11px;
-  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--color-text-on-dark);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -254,14 +270,14 @@ function formatDate(dateStr: string): string {
 
 .history-panel__entry-date {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-muted);
+  font-size: 9px;
+  color: var(--color-text-dim);
 }
 
 .history-panel__entry-total {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-muted);
+  font-size: 9px;
+  color: var(--color-text-dim);
 }
 
 /* ---------------------------------------------------------------------------
@@ -270,7 +286,7 @@ function formatDate(dateStr: string): string {
 .history-panel__clear {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   background: none;
   border: none;
   padding: var(--space-3) var(--space-2);

@@ -55,10 +55,10 @@ const { toasts, dismissToast } = toast
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--r-md);
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  color: var(--color-white);
+  color: var(--color-sand);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
   min-width: 280px;
@@ -92,7 +92,7 @@ const { toasts, dismissToast } = toast
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
-  color: var(--color-white);
+  color: var(--color-sand);
   font-size: 10px;
   cursor: pointer;
   transition: background 0.15s ease;

@@ -21,14 +21,7 @@ const display = useInvoiceDisplay(props)
 <template>
   <div class="invoice friendly-template">
     <!-- Logo -->
-    <div
-      v-if="display.hasLogo"
-      class="friendly-template__logo-wrapper"
-      :class="{
-        'friendly-template__logo-wrapper--left': invoice.logo!.position === 'left',
-        'friendly-template__logo-wrapper--right': invoice.logo!.position === 'right',
-      }"
-    >
+    <div v-if="display.hasLogo" class="friendly-template__logo-wrapper">
       <img :src="invoice.logo!.data" alt="Logo" class="friendly-template__logo" />
     </div>
 
@@ -62,10 +55,17 @@ const display = useInvoiceDisplay(props)
       </div>
     </div>
 
-    <!-- Dates -->
-    <div class="friendly-template__dates">
-      <span>Issued: {{ display.formatDate(invoice.meta.issue_date) }}</span>
-      <span>Due: {{ display.formatDate(invoice.meta.due_date) }}</span>
+    <!-- Date strip -->
+    <div class="friendly-template__dstrip">
+      <span class="friendly-template__dstrip-item">
+        Issue Date: {{ display.formatDate(invoice.meta.issue_date) }}
+      </span>
+      <span class="friendly-template__dstrip-item">
+        Due Date: {{ display.formatDate(invoice.meta.due_date) }}
+      </span>
+      <span class="friendly-template__dstrip-item">
+        Currency: {{ invoice.meta.currency }}
+      </span>
     </div>
 
     <!-- Items (rounded table) -->
@@ -146,7 +146,7 @@ const display = useInvoiceDisplay(props)
   .friendly-template {
     width: 100%;
     min-height: 1123px;
-    background: #FFFDF9;
+    background: #F5FFFE;
     padding: var(--invoice-padding);
   }
 }
@@ -154,14 +154,6 @@ const display = useInvoiceDisplay(props)
 /* ---- Logo ---- */
 .friendly-template__logo-wrapper {
   margin-bottom: var(--space-5);
-}
-
-.friendly-template__logo-wrapper--left {
-  text-align: left;
-}
-
-.friendly-template__logo-wrapper--right {
-  text-align: right;
 }
 
 .friendly-template__logo {
@@ -173,8 +165,8 @@ const display = useInvoiceDisplay(props)
 /* ---- Badge ---- */
 .friendly-template__badge {
   display: inline-block;
-  background: var(--color-rust);
-  border-radius: var(--border-radius-lg);
+  background: var(--color-mangrove);
+  border-radius: var(--r-lg);
   padding: var(--space-2) var(--space-5);
   margin-bottom: var(--space-3);
 }
@@ -182,7 +174,7 @@ const display = useInvoiceDisplay(props)
 .friendly-template__badge-text {
   font-family: var(--font-serif);
   font-size: var(--text-md);
-  color: var(--color-white);
+  color: var(--color-text-on-dark);
   margin: 0;
   font-weight: var(--weight-regular);
 }
@@ -194,6 +186,23 @@ const display = useInvoiceDisplay(props)
   margin: 0 0 var(--space-6);
 }
 
+/* ---- Date Strip ---- */
+.friendly-template__dstrip {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-5);
+  background: var(--color-reef);
+  border-radius: var(--r-md);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+}
+
+.friendly-template__dstrip-item {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
 /* ---- Cards ---- */
 .friendly-template__cards {
   display: flex;
@@ -203,10 +212,11 @@ const display = useInvoiceDisplay(props)
 
 .friendly-template__card {
   flex: 1;
-  background: var(--color-white);
-  border-radius: var(--border-radius-lg);
+  background: var(--color-sand);
+  border-radius: var(--r-lg);
   padding: var(--space-5);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-paper);
 }
 
 .friendly-template__card-label {
@@ -231,38 +241,30 @@ const display = useInvoiceDisplay(props)
   line-height: 1.5;
 }
 
-/* ---- Dates ---- */
-.friendly-template__dates {
-  display: flex;
-  gap: var(--space-6);
-  margin-bottom: var(--space-5);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-}
-
 /* ---- Table ---- */
 .friendly-template__table-wrapper {
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--r-lg);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-paper);
   margin-bottom: var(--space-5);
+  border: 1px solid var(--color-border);
 }
 
 .friendly-template__table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--color-white);
+  background: var(--color-sand);
 }
 
 .friendly-template__table-header {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: #5A8078;
   padding: var(--space-3) var(--space-4);
   text-align: left;
   font-weight: var(--weight-regular);
-  background: var(--color-rust-light);
+  background: #EAF4F2;
 }
 
 .friendly-template__table-header--desc {
@@ -328,7 +330,7 @@ const display = useInvoiceDisplay(props)
 
 .friendly-template__totals-divider {
   border: none;
-  border-top: 2px solid var(--color-rust);
+  border-top: 2px solid var(--color-text-primary);
   margin: var(--space-2) 0;
 }
 
@@ -355,10 +357,11 @@ const display = useInvoiceDisplay(props)
 }
 
 .friendly-template__notes-card {
-  background: var(--color-white);
-  border-radius: var(--border-radius-lg);
+  background: var(--color-sand);
+  border-radius: var(--r-lg);
   padding: var(--space-4) var(--space-5);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-paper);
 }
 
 .friendly-template__notes-text {

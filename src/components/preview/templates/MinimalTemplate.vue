@@ -21,14 +21,7 @@ const display = useInvoiceDisplay(props)
 <template>
   <div class="invoice minimal-template">
     <!-- Logo -->
-    <div
-      v-if="display.hasLogo"
-      class="minimal-template__logo-wrapper"
-      :class="{
-        'minimal-template__logo-wrapper--left': invoice.logo!.position === 'left',
-        'minimal-template__logo-wrapper--right': invoice.logo!.position === 'right',
-      }"
-    >
+    <div v-if="display.hasLogo" class="minimal-template__logo-wrapper">
       <img :src="invoice.logo!.data" alt="Logo" class="minimal-template__logo" />
     </div>
 
@@ -122,7 +115,7 @@ const display = useInvoiceDisplay(props)
   .minimal-template {
     width: 100%;
     min-height: 1123px;
-    background: #FAFAF8;
+    background: #FAFFFE;
     padding: var(--space-12) var(--space-16);
   }
 }
@@ -130,14 +123,6 @@ const display = useInvoiceDisplay(props)
 /* ---- Logo ---- */
 .minimal-template__logo-wrapper {
   margin-bottom: var(--space-8);
-}
-
-.minimal-template__logo-wrapper--left {
-  text-align: left;
-}
-
-.minimal-template__logo-wrapper--right {
-  text-align: right;
 }
 
 .minimal-template__logo {

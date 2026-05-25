@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(26, 22, 20, 0.5); /* --color-ink at 50% */
+  background: rgba(22, 46, 42, 0.5); /* --color-mangrove at 50% */
 }
 
 /* Backdrop transition */
@@ -132,9 +132,9 @@ onBeforeUnmount(() => {
    Dialog Card
    --------------------------------------------------------------------------- */
 .modal-card {
-  background: var(--color-white);
-  border-radius: var(--border-radius-md);
-  box-shadow: 0 8px 32px rgba(26, 22, 20, 0.2);
+  background: var(--paper);
+  border-radius: var(--r-md);
+  box-shadow: 0 8px 32px rgba(22, 46, 42, 0.2);
   min-width: 360px;
   max-width: 480px;
   width: 90vw;
@@ -195,43 +195,43 @@ onBeforeUnmount(() => {
    Button Styles — design system tokens for modal action buttons
    --------------------------------------------------------------------------- */
 
-/* Primary — rust filled */
+/* Primary — coral filled */
 :deep(.btn-primary) {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-rust);
-  background: var(--color-rust);
-  color: var(--color-white);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--color-coral);
+  background: var(--color-coral);
+  color: var(--color-sand);
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 :deep(.btn-primary:hover) {
-  background: var(--color-rust-dark);
-  border-color: var(--color-rust-dark);
+  background: var(--color-coral-dark);
+  border-color: var(--color-coral-dark);
 }
 
-/* Secondary — rust outlined */
+/* Secondary — coral outlined */
 :deep(.btn-secondary) {
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-sm);
-  border: 1px solid var(--color-rust);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--color-coral);
   background: transparent;
-  color: var(--color-rust);
+  color: var(--color-coral);
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 :deep(.btn-secondary:hover) {
-  background: var(--color-rust-light);
+  background: var(--color-coral-pale);
 }
 
 /* Ghost — muted outlined */
@@ -241,7 +241,7 @@ onBeforeUnmount(() => {
   letter-spacing: 1px;
   text-transform: uppercase;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--r-sm);
   border: 1px solid var(--color-border);
   background: transparent;
   color: var(--color-text-muted);
@@ -250,8 +250,8 @@ onBeforeUnmount(() => {
 }
 
 :deep(.btn-ghost:hover) {
-  background: var(--color-rust-light);
+  background: var(--color-coral-pale);
   color: var(--color-text-primary);
-  border-color: var(--color-rust);
+  border-color: var(--color-coral);
 }
 </style>

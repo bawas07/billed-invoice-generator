@@ -99,11 +99,13 @@ describe('PreviewPanel', () => {
     expect(templateSwitcher.exists()).toBe(true)
   })
 
-  it('renders ActionBar', () => {
+  it('renders preview-topbar with Upload JSON button', () => {
     const wrapper = mount(PreviewPanel, createMountOptions())
 
-    const actionBar = wrapper.findComponent({ name: 'ActionBar' })
-    expect(actionBar.exists()).toBe(true)
+    const topbar = wrapper.find('.preview-topbar')
+    expect(topbar.exists()).toBe(true)
+    const uploadBtn = topbar.find('.preview-topbar__upload-btn')
+    expect(uploadBtn.exists()).toBe(true)
   })
 
   it('renders the active template component', () => {
@@ -188,9 +190,9 @@ describe('PreviewPanel', () => {
     }).toThrow()
   })
 
-  describe('skeleton (M3)', () => {
-    it('shows skeleton when invoice is empty', () => {
-      // Override with empty invoice so skeleton shows
+  describe('no skeleton (v2)', () => {
+    it('renders template directly without skeleton', () => {
+      // Even with empty invoice, no skeleton is shown
       const emptyData = createEmptyInvoice()
       const emptyMock = createMockInvoice(emptyData)
       const wrapper = mount(PreviewPanel, {
@@ -217,48 +219,12 @@ describe('PreviewPanel', () => {
           },
         },
       })
-
-      const skeleton = wrapper.find('.preview-panel__skeleton')
-      expect(skeleton.exists()).toBe(true)
-    })
-
-    it('hides skeleton when FROM name is filled via debounce', async () => {
-      // Start with empty invoice
-      const emptyData = createEmptyInvoice()
-      const emptyMock = createMockInvoice(emptyData)
-      const wrapper = mount(PreviewPanel, {
-        global: {
-          provide: {
-            [INVOICE_KEY as symbol]: emptyMock,
-            [TEMPLATE_KEY as symbol]: mockTemplate,
-            [JSON_IO_KEY as symbol]: {
-              exportJson: vi.fn(),
-              importJson: vi.fn(),
-              importing: { value: false },
-            },
-            [TOAST_KEY as symbol]: {
-              showToast: vi.fn(),
-              dismissToast: vi.fn(),
-              toasts: { value: [] },
-            },
-            [HISTORY_KEY as symbol]: {
-              history: { value: [] },
-              addToHistory: vi.fn(),
-              loadFromHistory: vi.fn(),
-              clearHistory: vi.fn(),
-            },
-          },
-        },
-      })
-
-      // Now fill FROM name
-      emptyMock.invoice.value.from.name = 'Sender Corp'
-      await wrapper.vm.$nextTick()
-      vi.advanceTimersByTime(100)
-      await wrapper.vm.$nextTick()
 
       const skeleton = wrapper.find('.preview-panel__skeleton')
       expect(skeleton.exists()).toBe(false)
+      // Template should render directly
+      const classicTemplate = wrapper.findComponent({ name: 'ClassicTemplate' })
+      expect(classicTemplate.exists()).toBe(true)
     })
   })
 })

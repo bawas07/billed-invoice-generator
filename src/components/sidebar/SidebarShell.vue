@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // ---------------------------------------------------------------------------
-// SidebarShell — sidebar layout with tab navigation and form content
+// SidebarShell — sidebar layout with tab navigation, brand, and sticky actions
 // Layer: components (depends on: Vue, injection keys)
 // ---------------------------------------------------------------------------
 
 import { ref, type Ref } from 'vue'
 import InvoiceForm from '@/components/shared/InvoiceForm.vue'
 import HistoryPanel from './HistoryPanel.vue'
+import SidebarActions from './SidebarActions.vue'
 
 type SidebarTab = 'editor' | 'history'
 
@@ -24,7 +25,9 @@ function setTab(tab: SidebarTab): void {
   -->
   <aside class="sidebar">
     <div class="sidebar__brand">
-      <h1 class="sidebar__title">◆ Billed</h1>
+      <div class="sidebar__brand-icon">
+        <span class="sidebar__brand-hex">⬡</span>
+      </div>
       <p class="sidebar__subtitle">by Bawas · INVOICE GENERATOR</p>
     </div>
     <nav class="sidebar__tabs">
@@ -47,8 +50,13 @@ function setTab(tab: SidebarTab): void {
       <!-- Editor tab: InvoiceForm -->
       <InvoiceForm v-if="activeTab === 'editor'" />
 
-      <!-- History tab: M3 — HistoryPanel -->
+      <!-- History tab: HistoryPanel -->
       <HistoryPanel v-else />
+    </div>
+
+    <!-- Sticky action bar at bottom -->
+    <div class="sidebar__sticky-actions">
+      <SidebarActions />
     </div>
   </aside>
 </template>
@@ -57,49 +65,59 @@ function setTab(tab: SidebarTab): void {
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
-  background: var(--color-ink);
+  background: var(--sidebar-bg);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   flex-shrink: 0;
+  position: relative;
+  box-shadow: 2px 0 32px rgba(0, 0, 0, 0.22);
 }
 
 .sidebar__brand {
   padding: var(--space-6) var(--space-6) var(--space-8);
 }
 
-.sidebar__title {
-  font-family: var(--font-serif);
-  font-size: var(--text-xl);
-  font-weight: var(--weight-regular);
-  color: var(--color-cream);
-  margin: 0;
-  line-height: 1.2;
+.sidebar__brand-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--color-coral);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 14px rgba(232, 115, 74, 0.45);
+}
+
+.sidebar__brand-hex {
+  font-size: 20px;
+  color: var(--color-sand);
+  line-height: 1;
 }
 
 .sidebar__subtitle {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   text-transform: uppercase;
   letter-spacing: 2.5px;
-  margin: var(--space-1) 0 0;
+  margin: var(--space-2) 0 0;
 }
 
 .sidebar__tabs {
   display: flex;
-  border-bottom: 1px solid var(--color-border-ink);
+  border-bottom: 1px solid var(--color-border-dark);
   padding: 0 var(--space-6);
 }
 
 .sidebar__tab {
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 1px;
+  font-size: 9px;
+  letter-spacing: 2px;
   background: none;
   border: none;
   padding: var(--space-3) var(--space-4);
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   text-transform: uppercase;
@@ -107,19 +125,27 @@ function setTab(tab: SidebarTab): void {
 }
 
 .sidebar__tab:hover {
-  color: var(--color-cream);
+  color: var(--color-text-on-dark);
 }
 
 .sidebar__tab--active {
-  color: var(--color-cream);
-  border-bottom-color: var(--color-rust);
+  color: var(--color-text-on-dark);
+  border-bottom-color: var(--color-coral);
 }
 
 .sidebar__content {
   flex: 1;
   padding: var(--space-6);
+  padding-bottom: 130px;
   overflow-y: auto;
 }
 
-
+.sidebar__sticky-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, var(--color-mangrove) 58%, transparent);
+  padding: 14px 28px;
+}
 </style>

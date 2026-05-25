@@ -203,23 +203,23 @@ function updateItem(
 
 .editable-table__label {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  font-size: 8px;
   letter-spacing: 1px;
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   text-transform: uppercase;
 }
 
 .editable-table__table {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border-ink);
-  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--r-sm);
   overflow: hidden;
 }
 
 .editable-table__row {
   display: flex;
-  border-bottom: 1px solid var(--color-border-ink);
+  border-bottom: 1px solid var(--color-border-dark);
 }
 
 .editable-table__row:last-child {
@@ -228,11 +228,13 @@ function updateItem(
 
 .editable-table__row--header {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--color-text-dim);
   padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--color-border-ink);
-  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--color-border-dark);
+  background: rgba(228, 240, 238, 0.04);
+  text-transform: uppercase;
 }
 
 .editable-table__row--header .editable-table__cell {
@@ -274,19 +276,24 @@ function updateItem(
 .editable-table__input {
   font-family: var(--font-sans);
   font-size: var(--text-sm);
-  color: var(--color-cream);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  padding: var(--space-1) var(--space-2);
+  color: var(--color-text-on-dark);
+  background: rgba(228, 240, 238, 0.07);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--r-sm);
+  padding: 11px 14px;
   width: 100%;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  font-size: 13.5px;
+}
+
+.editable-table__input::placeholder {
+  color: rgba(228, 240, 238, 0.18);
 }
 
 .editable-table__input:focus {
-  border-color: var(--color-rust);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-coral);
+  background: rgba(228, 240, 238, 0.12);
 }
 
 .editable-table__input--number {
@@ -303,7 +310,7 @@ function updateItem(
 .editable-table__amount {
   font-family: var(--font-mono);
   font-size: var(--text-sm);
-  color: var(--color-cream);
+  color: var(--color-text-on-dark);
 }
 
 .editable-table__remove {
@@ -315,7 +322,7 @@ function updateItem(
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-dim);
   font-size: 10px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
@@ -335,10 +342,10 @@ function updateItem(
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 1px;
-  color: var(--color-rust);
+  color: var(--color-coral);
   background: none;
-  border: 1px dashed var(--color-border-ink);
-  border-radius: var(--border-radius-sm);
+  border: 1px dashed var(--color-border-dark);
+  border-radius: var(--r-sm);
   padding: var(--space-2);
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
@@ -346,8 +353,8 @@ function updateItem(
 }
 
 .editable-table__add:hover {
-  border-color: var(--color-rust);
-  background: rgba(196, 98, 45, 0.04);
+  border-color: var(--color-coral);
+  background: rgba(232, 115, 74, 0.05);
 }
 
 /* ---------------------------------------------------------------------------
