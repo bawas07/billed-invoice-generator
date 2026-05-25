@@ -17,6 +17,7 @@ import {
   TEMPLATE_KEY,
 } from '@/composables/injection-keys'
 import Modal from '@/components/shared/Modal.vue'
+import { triggerPrint } from '@/composables/usePrint'
 
 const _invoice = inject(INVOICE_KEY)
 const _jsonIO = inject(JSON_IO_KEY)
@@ -109,7 +110,7 @@ async function handleFileSelected(event: Event): Promise<void> {
 }
 
 function handlePDF(): void {
-  window.print()
+  triggerPrint()
 }
 
 function handleNewInvoice(): void {
@@ -126,7 +127,7 @@ function handleDownloadAndContinue(): void {
     ensureInvoiceNumber()
     jsonIO.exportJson(invoice.invoice.value)
     history.addToHistory(invoice.invoice.value)
-    invoice.nextInvoiceNumber()
+    invoice.nextInvoiceNumber(template.activeTemplate.value)
     toast.showToast('Invoice exported. New invoice created.', 'success')
   } catch {
     toast.showToast('Failed to export invoice.', 'error')
@@ -136,7 +137,7 @@ function handleDownloadAndContinue(): void {
 function handleDiscardAndContinue(): void {
   showDirtyModal.value = false
   toast.showToast('Changes discarded. New invoice created.', 'success')
-  invoice.nextInvoiceNumber()
+  invoice.nextInvoiceNumber(template.activeTemplate.value)
 }
 
 function handleCancelNewInvoice(): void {
@@ -144,7 +145,7 @@ function handleCancelNewInvoice(): void {
 }
 
 function createNewInvoice(): void {
-  invoice.nextInvoiceNumber()
+  invoice.nextInvoiceNumber(template.activeTemplate.value)
   toast.showToast('New invoice created.', 'success')
 }
 </script>

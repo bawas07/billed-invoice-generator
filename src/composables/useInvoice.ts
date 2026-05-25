@@ -29,7 +29,7 @@ export interface UseInvoiceReturn {
   totals: ComputedRef<Totals>
   resetInvoice: () => void
   loadInvoice: (data: InvoiceData, markDirty?: boolean) => TemplateId
-  nextInvoiceNumber: () => void
+  nextInvoiceNumber: (templateId?: TemplateId) => void
 }
 
 export function useInvoice(): UseInvoiceReturn {
@@ -154,14 +154,22 @@ export function useInvoice(): UseInvoiceReturn {
    * Reads the current invoice_number, computes the next value via
    * `getNextInvoiceNumber`, creates a fresh invoice with that number,
    * and resets the dirty flag.
+   *
+   * @param templateId - Optional template to set on the new invoice.
+   *                     Prevents the App.vue template sync watch from
+   *                     triggering a false isDirty when the template
+   *                     differs from createEmptyInvoice()'s default.
    */
-  function nextInvoiceNumber(): void {
+  function nextInvoiceNumber(templateId?: TemplateId): void {
     const currentNumber = invoice.value.meta.invoice_number
     const nextNumber = getNextInvoiceNumber(currentNumber)
     const fresh = createEmptyInvoice()
     fresh.meta.invoice_number = nextNumber
     isDirtyWatcherActive = false
     invoice.value = JSON.parse(JSON.stringify(fresh)) as InvoiceData
+    if (templateId) {
+      invoice.value.template = templateId
+    }
     isDirty.value = false
     isDirtyWatcherActive = true
   }

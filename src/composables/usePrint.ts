@@ -1,24 +1,12 @@
 // ---------------------------------------------------------------------------
-// usePrint — print / PDF trigger (stub)
-// Layer: composables (depends on: Vue)
+// triggerPrint — triggers the browser's native print dialog for PDF generation
+// Layer: utils (depends on: nothing)
+// ---------------------------------------------------------------------------
+// The `print.css` stylesheet (@media print) handles all visual layout (A4
+// sizing, UI chrome hiding). This is purely the JS trigger — no state, no
+// event listeners, no toast.
 // ---------------------------------------------------------------------------
 
-/**
- * Print utilities (stub — full implementation in M1).
- *
- * - `triggerPrint()`: **Not implemented** — throws
- */
-export function usePrint() {
-  /**
-   * Trigger the browser print dialog for PDF generation.
-   *
-   * @throws {Error} Always throws — not implemented until M1.
-   */
-  function triggerPrint(): never {
-    throw new Error('Not implemented')
-  }
-
-  return {
-    triggerPrint,
-  }
+export function triggerPrint(): void {
+  window.print()
 }

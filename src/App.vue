@@ -16,7 +16,7 @@
 // - useTemplate: active template selection
 // ---------------------------------------------------------------------------
 
-import { provide } from 'vue'
+import { provide, watch } from 'vue'
 
 import SidebarShell from '@/components/sidebar/SidebarShell.vue'
 import PreviewPanel from '@/components/preview/PreviewPanel.vue'
@@ -53,6 +53,17 @@ provide(LOGO_UPLOAD_KEY, logoUpload)
 provide(TOAST_KEY, toast)
 provide(HISTORY_KEY, history)
 provide(TEMPLATE_KEY, template)
+
+// Sync template changes to invoice data so JSON export includes active template.
+// When the user switches templates via the UI, TemplateSwitcher calls
+// template.setTemplate() which updates activeTemplate. We propagate that
+// to invoice.value.template so the exported JSON preserves the chosen template.
+watch(
+  () => template.activeTemplate.value,
+  (newTemplate) => {
+    invoice.invoice.value.template = newTemplate
+  },
+)
 
 // handleLoadInvoice will be wired in M3 when history panel is interactive.
 // At that point it will coordinate useInvoice.loadInvoice + useTemplate.setTemplate.

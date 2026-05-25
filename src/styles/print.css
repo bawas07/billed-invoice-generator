@@ -9,7 +9,6 @@
      .sidebar            → SidebarShell.vue root
      .preview-panel      → PreviewPanel.vue root
      .template-switcher  → PreviewPanel.vue template-switcher bar
-     .action-bar         → preview/ActionBar.vue root (legacy, if still present)
      .preview-topbar     → PreviewPanel.vue topbar
      .no-print           → any element that should be hidden
      .invoice            → template invoice card root
@@ -21,10 +20,9 @@
 }
 
 @media print {
-  /* Hide sidebar, topbar, template switcher, old action bar, and any no-print elements */
+  /* Hide sidebar, topbar, template switcher, and any no-print elements */
   .sidebar,
   .template-switcher,
-  .action-bar,
   .preview-topbar,
   .no-print {
     display: none !important;
