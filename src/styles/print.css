@@ -10,6 +10,8 @@
      .preview-panel      → PreviewPanel.vue root
      .template-switcher  → PreviewPanel.vue template-switcher bar
      .preview-topbar     → PreviewPanel.vue topbar
+     .preview-scroll     → PreviewPanel.vue scroll wrapper
+     .preview-panel__card → PreviewPanel.vue card wrapper
      .no-print           → any element that should be hidden
      .invoice            → template invoice card root
    --------------------------------------------------------------------------- */
@@ -49,6 +51,23 @@
     box-shadow: none !important;
     border: none !important;
     page-break-inside: avoid;
+  }
+
+  /* Reset scroll wrapper — removes overflow clipping, extra padding,
+     flex centering, and the phantom scrollbar that was appearing in PDF */
+  .preview-scroll {
+    overflow: visible !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  /* Reset card wrapper — removes shadow bleed, conflicting width constraints,
+     and duplicate A4 height that caused page splitting */
+  .preview-panel__card {
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    flex-shrink: initial !important;
   }
 
   /* Prevent page breaks inside sections */
