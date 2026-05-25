@@ -144,18 +144,18 @@
 
 ## 14. Verification
 
-- [ ] 14.1 Manual: App loads with grid layout, sidebar 410px, preview fills remaining space
-- [ ] 14.2 Manual: Brand shows coral hexagon icon with shadow
-- [ ] 14.3 Manual: All form inputs use v2 dark-on-dark styling
-- [ ] 14.4 Manual: Preview has radial gradient background
-- [ ] 14.5 Manual: Template switcher pills are fully rounded, active = mangrove fill
-- [ ] 14.6 Manual: Switch through all 5 templates — correct colors, Bold has mangrove header, Friendly has date strip
-- [ ] 14.7 Manual: Download JSON → verify defaults are IDR, 11% PPN, 2 line items
-- [ ] 14.8 Manual: Upload saved JSON → loads correctly with template sync
-- [ ] 14.9 Manual: History entries show card style with coral left-bar animation on hover
-- [ ] 14.10 Manual: Sidebar sticky action bar visible with Upload/Download/PDF/New buttons
-- [ ] 14.11 Manual: PDF button triggers `window.print()`
-- [ ] 14.12 Manual: Logo upload works, position toggle removed
-- [ ] 14.13 Manual: Print preview (Ctrl+P) — sidebar and topbar hidden, invoice A4
-- [ ] 14.14 Manual: Dirty-check modal works for New Invoice in sidebar
-- [ ] 14.15 Manual: Upload JSON from both sidebar and preview topbar works
+- [x] 14.1 Manual: App loads with grid layout, sidebar 410px, preview fills remaining space
+- [x] 14.2 Manual: Brand shows coral hexagon icon with shadow
+- [x] 14.3 Manual: All form inputs use v2 dark-on-dark styling
+- [x] 14.4 Manual: Preview has radial gradient background
+- [x] 14.5 Manual: Template switcher pills are fully rounded, active = mangrove fill
+- [x] 14.6 Manual: Switch through all 5 templates — correct colors, Bold has mangrove header, Friendly has date strip
+- [x] 14.7 Manual: Download JSON → verify defaults are IDR, 11% PPN, 2 line items
+- [x] 14.8 Manual: Upload saved JSON → loads correctly with template sync
+- [x] 14.9 Manual: History entries show card style with coral left-bar animation on hover
+- [x] 14.10 Manual: Sidebar sticky action bar visible with Upload/Download/PDF/New buttons
+- [x] 14.11 Manual: PDF button triggers `window.print()`
+- [x] 14.12 Manual: Logo upload works, position toggle removed
+- [x] 14.13 Manual: Print preview (Ctrl+P) — sidebar and topbar hidden, invoice A4
+- [x] 14.14 Manual: Dirty-check modal works for New Invoice in sidebar
+- [x] 14.15 Manual: Upload JSON from both sidebar and preview topbar works

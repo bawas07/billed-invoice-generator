@@ -5,14 +5,18 @@ Define the interactive invoice form used in the sidebar editor. Users fill in in
 ## Requirements
 
 ### Requirement: Invoice form renders all required fields
-The system SHALL render an interactive form in the sidebar with the following sections: Logo, From (sender), To (client), Invoice Meta, Line Items, Totals, and Notes. Each section SHALL have a labeled divider.
+The system SHALL render an interactive form in the sidebar with the following sections: Logo, From (sender), To (client), Invoice Meta, Line Items, Totals, and Notes. Each section SHALL have a labeled divider using coral-colored labels with a decorative line (`::after` pseudo-element, `var(--color-border-dark)`). The Logo section SHALL NOT include a position toggle.
 
-#### Scenario: Form loads with default values
+#### Scenario: Form loads with v2 default values
 - **WHEN** the app loads
-- **THEN** the form SHALL display default values: invoice number "INV-001", issue date = today, due date = today + 30 days, currency = USD, 1 empty line item, zeroed totals
+- **THEN** the form SHALL display default values: invoice number "INV-001", issue date = today, due date = today + 30 days, currency = IDR, 2 empty line items, tax 11% with label "PPN"
 
-### Requirement: Logo upload
-The system SHALL accept image file uploads for the invoice logo via click-to-browse or drag-and-drop. The logo SHALL be displayed as a thumbnail preview in the form and SHALL be removable.
+#### Scenario: Section dividers use coral styling
+- **WHEN** the form renders
+- **THEN** each section divider label SHALL be coral-colored mono 9px with 2.5px letter-spacing and a decorative line
+
+### Requirement: Logo upload (position removed)
+The system SHALL accept image file uploads for the invoice logo via click-to-browse or drag-and-drop. The logo SHALL be displayed as a thumbnail preview in the form and SHALL be removable. The logo SHALL be rendered left-aligned in all templates; the position toggle checkbox SHALL be removed from the form.
 
 #### Scenario: Upload a logo image
 - **WHEN** user selects a PNG/JPEG image file from the file picker
@@ -29,6 +33,21 @@ The system SHALL accept image file uploads for the invoice logo via click-to-bro
 #### Scenario: Upload large image shows size warning
 - **WHEN** user selects an image larger than 2MB
 - **THEN** the image SHALL still be accepted but a warning toast SHALL be shown
+
+#### Scenario: Logo position toggle removed
+- **WHEN** a logo is uploaded
+- **THEN** no position toggle UI SHALL be visible in the form
+
+### Requirement: Field label and input styling
+Field labels SHALL use mono 9px font, 1.2px letter-spacing, uppercase, `var(--color-text-dim)` color. Field inputs SHALL use dark translucent background (`rgba(228,240,238,.07)`), dark border (`1px solid var(--color-border-dark)`), 5px border-radius, 11px 14px padding, light text color, 13.5px font size. Focus state SHALL show coral border and slightly lighter background.
+
+#### Scenario: Inputs use v2 dark styling
+- **WHEN** the form renders
+- **THEN** all text inputs SHALL have dark translucent backgrounds with dark borders
+
+#### Scenario: Focus shows coral accent
+- **WHEN** a field input receives focus
+- **THEN** its border SHALL change to coral color
 
 ### Requirement: From (sender) fields
 The system SHALL provide text inputs for sender name, address (multiline), email, phone (optional), and website (optional).
