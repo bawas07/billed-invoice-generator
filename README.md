@@ -68,42 +68,47 @@ src/
 ├── components/
 │   ├── sidebar/
 │   │   ├── SidebarShell.vue      # Sidebar layout with tabs
-│   │   ├── LogoUpload.vue        # Logo upload zone (drag & drop)
-│   │   ├── PartyFields.vue       # Reusable From/To address block
-│   │   ├── MetaFields.vue        # Invoice number, dates, currency
-│   │   ├── LineItemsTable.vue    # Dynamic line item rows
-│   │   ├── TotalsFields.vue      # Discount, tax label, tax %
-│   │   └── NotesField.vue        # Free-text notes area
+│   │   ├── SidebarActions.vue    # Download/Upload/New/Print actions
+│   │   └── HistoryPanel.vue      # Session invoice history list
 │   ├── preview/
 │   │   ├── PreviewPanel.vue      # Preview container + template switcher
 │   │   ├── TemplateSwitcher.vue  # Template pill buttons
 │   │   └── templates/
-│   │       ├── TemplateClassic.vue
-│   │       ├── TemplateMinimal.vue
-│   │       ├── TemplateBold.vue
-│   │       ├── TemplateSidebar.vue
-│   │       └── TemplateFriendly.vue
-│   ├── shared/
-│   │   ├── AppButton.vue         # Button variants (primary/secondary/ghost)
-│   │   ├── AppToast.vue          # Toast notification component
-│   │   └── ActionBar.vue         # Download/Upload/New actions
-│   └── HistoryPanel.vue          # Session invoice history list
+│   │       ├── ClassicTemplate.vue
+│   │       ├── MinimalTemplate.vue
+│   │       ├── BoldTemplate.vue
+│   │       ├── SidebarTemplate.vue
+│   │       └── FriendlyTemplate.vue
+│   └── shared/
+│       ├── InvoiceForm.vue       # Composable invoice form (all fields)
+│       ├── EditableTable.vue     # Dynamic line item rows
+│       ├── Modal.vue             # Confirmation modal dialog
+│       ├── FileUpload.vue        # Logo upload zone (drag & drop)
+│       ├── Toast.vue             # Toast notification component
+│       ├── TextInput.vue         # Text input (wrapped in field label)
+│       ├── TextareaInput.vue     # Textarea (wrapped in field label)
+│       ├── DateInput.vue         # Date input (wrapped in field label)
+│       ├── NumberInput.vue       # Number input (wrapped in field label)
+│       └── SelectInput.vue       # Select dropdown (wrapped in field label)
 ├── composables/
 │   ├── useInvoice.ts             # Core invoice state & computed totals
 │   ├── useHistory.ts             # Session history add/load/clear
 │   ├── useTemplate.ts            # Active template & switch handler
+│   ├── useInvoiceDisplay.ts      # Formatted display helpers for invoice data
 │   ├── useLogoUpload.ts          # File → base64, size validation
 │   ├── useJsonIO.ts              # JSON export/import + validation
-│   └── usePrint.ts               # window.print() with print CSS
+│   ├── usePrint.ts               # window.print() with print CSS
+│   ├── useToast.ts               # Toast notification state management
+│   └── injection-keys.ts         # Typed injection keys (provide/inject)
 ├── types/
-│   └── invoice.ts                # All TypeScript interfaces & type aliases
+│   └── index.ts                  # All TypeScript interfaces & type aliases
 ├── utils/
 │   ├── calculations.ts           # Subtotal, tax, total computations
 │   ├── defaults.ts               # Empty invoice factory
 │   ├── formatCurrency.ts         # Locale-aware currency formatting
 │   └── generateFilename.ts       # INV-001_ClientName_2026-05-19.json
 ├── styles/
-│   ├── tokens.css                # CSS custom properties (colors, type, spacing)
+│   ├── tokens.css                # CSS custom properties (Karang v2 palette)
 │   ├── global.css                # Reset and base styles
 │   └── print.css                 # A4 print/PDF styles
 ├── App.vue                       # Root layout (sidebar + preview)
@@ -167,11 +172,12 @@ Three principles:
 
 | Token | Value |
 |-------|-------|
-| Cream (app bg) | `#F5F0E8` |
-| White (cards) | `#FDFCFA` |
-| Ink (sidebar, headings) | `#1A1614` |
-| Rust (accent) | `#C4622D` |
-| Border | `#D9D2C5` |
+| Reef (app bg) | `#E4F0EE` |
+| Sand (cards / paper) | `#FDFFFE` |
+| Mangrove (sidebar, headings) | `#162E2A` |
+| Coral (accent) | `#E8734A` |
+| Teal (secondary) | `#1B8A72` |
+| Border | `#C0D8D4` |
 
 ### Typography
 
@@ -181,7 +187,7 @@ Three principles:
 
 ### Layout
 
-Two-column: fixed 420px sidebar + fluid preview panel. Desktop-first.
+Two-column: fixed 410px sidebar + fluid preview panel. Desktop-first.
 
 ---
 
@@ -191,7 +197,7 @@ Two-column: fixed 420px sidebar + fluid preview panel. Desktop-first.
 |----------|------|--------|
 | **Classic** | Clean, corporate | Two-column header, ruled table |
 | **Minimal** | Whitespace-heavy, modern | No borders, generous spacing |
-| **Bold** | High contrast, strong brand | Rust header band, bold type |
+| **Bold** | High contrast, strong brand | Dark mangrove header band, bold type |
 | **Sidebar** | Consultant-style | Left sidebar for sender info |
 | **Friendly** | Warm, creative freelancer | Rounded elements, accent color |
 
