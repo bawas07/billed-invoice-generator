@@ -4,14 +4,23 @@
 // Layer: components (depends on: Vue, injection keys)
 // ---------------------------------------------------------------------------
 
-import { ref, type Ref } from 'vue'
+import { inject, ref, watch, type Ref } from 'vue'
 import InvoiceForm from '@/components/shared/InvoiceForm.vue'
 import HistoryPanel from './HistoryPanel.vue'
 import SidebarActions from './SidebarActions.vue'
 
-type SidebarTab = 'editor' | 'history'
+// Inject sidebar tab control from AppView (used for 'continue' entry mode)
+import { SIDEBAR_TAB_KEY, type SidebarTab } from '@/composables/injection-keys'
 
 const activeTab: Ref<SidebarTab> = ref('editor')
+
+// Sync with AppView's sidebar tab control
+const appViewSidebarTab = inject<Ref<SidebarTab>>(SIDEBAR_TAB_KEY)
+if (appViewSidebarTab) {
+  watch(appViewSidebarTab, (tab) => {
+    activeTab.value = tab
+  }, { immediate: true })
+}
 
 function setTab(tab: SidebarTab): void {
   activeTab.value = tab

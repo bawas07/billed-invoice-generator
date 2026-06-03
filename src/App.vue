@@ -1,80 +1,72 @@
 <script setup lang="ts">
 // ---------------------------------------------------------------------------
-// App Root — Two-column layout shell with composable coordination
-// Layer: components (depends on: composables, components)
+// App Root — Thin shell that toggles between LandingView and AppView
+// Layer: components (depends on: Vue, components, composables)
 // ---------------------------------------------------------------------------
-// Initializes all composables, provides them via typed injection keys,
-// and renders the sidebar, preview panel (with action bar), and toast
-// notifications.
-//
-// M1+ wiring:
-// - useInvoice: invoice state, resetInvoice, loadInvoice
-// - useJsonIO: JSON export/import
-// - useLogoUpload: logo base64 conversion
-// - useToast: notification system
-// - useHistory: invoice history stack (for M3)
-// - useTemplate: active template selection
+// Holds a reactive currentView ref ('landing' | 'app') and an entryMode ref
+// that bridges landing page intent to AppView. Provides ENTRY_MODE_KEY so
+// AppView can read the entry mode on mount. Manages body class for theme
+// switching (view-landing / view-app).
 // ---------------------------------------------------------------------------
 
-import { provide, watch } from 'vue'
+import { provide, ref, watch, type Ref } from 'vue'
 
-import SidebarShell from '@/components/sidebar/SidebarShell.vue'
-import PreviewPanel from '@/components/preview/PreviewPanel.vue'
-import Toast from '@/components/shared/Toast.vue'
+import LandingView from '@/components/LandingView.vue'
+import AppView from '@/components/AppView.vue'
 
-import { useInvoice } from '@/composables/useInvoice'
-import { useJsonIO } from '@/composables/useJsonIO'
-import { useLogoUpload } from '@/composables/useLogoUpload'
-import { useToast } from '@/composables/useToast'
-import { useHistory } from '@/composables/useHistory'
-import { useTemplate } from '@/composables/useTemplate'
+import { ENTRY_MODE_KEY, type EntryMode } from '@/composables/injection-keys'
+import type { InvoiceData } from '@/types'
 
-import {
-  INVOICE_KEY,
-  JSON_IO_KEY,
-  LOGO_UPLOAD_KEY,
-  TOAST_KEY,
-  HISTORY_KEY,
-  TEMPLATE_KEY,
-} from '@/composables/injection-keys'
+const currentView: Ref<'landing' | 'app'> = ref('landing')
+const entryMode: Ref<EntryMode> = ref(null)
 
-// Initialize composables
-const invoice = useInvoice()
-const jsonIO = useJsonIO()
-const logoUpload = useLogoUpload()
-const toast = useToast()
-const history = useHistory()
-const template = useTemplate()
+provide(ENTRY_MODE_KEY, entryMode)
 
-// Provide via typed injection keys
-provide(INVOICE_KEY, invoice)
-provide(JSON_IO_KEY, jsonIO)
-provide(LOGO_UPLOAD_KEY, logoUpload)
-provide(TOAST_KEY, toast)
-provide(HISTORY_KEY, history)
-provide(TEMPLATE_KEY, template)
+// Toggle body class for theme switching
+watch(currentView, (view) => {
+  if (view === 'landing') {
+    document.body.classList.add('view-landing')
+  } else {
+    document.body.classList.remove('view-landing')
+  }
+}, { immediate: true })
 
-// Sync template changes to invoice data so JSON export includes active template.
-// When the user switches templates via the UI, TemplateSwitcher calls
-// template.setTemplate() which updates activeTemplate. We propagate that
-// to invoice.value.template so the exported JSON preserves the chosen template.
-watch(
-  () => template.activeTemplate.value,
-  (newTemplate) => {
-    invoice.invoice.value.template = newTemplate
-  },
-)
+function handleCreateNew(): void {
+  entryMode.value = { type: 'new' }
+  currentView.value = 'app'
+}
 
-// handleLoadInvoice will be wired in M3 when history panel is interactive.
-// At that point it will coordinate useInvoice.loadInvoice + useTemplate.setTemplate.
+function handleContinueExisting(): void {
+  entryMode.value = { type: 'continue' }
+  currentView.value = 'app'
+}
+
+function handleUploadJson(payload: InvoiceData): void {
+  entryMode.value = { type: 'upload', payload }
+  currentView.value = 'app'
+}
 </script>
 
 <template>
-  <SidebarShell />
-  <PreviewPanel />
-  <Toast />
+  <Transition name="view" mode="out-in">
+    <LandingView
+      v-if="currentView === 'landing'"
+      @create-new="handleCreateNew"
+      @continue-existing="handleContinueExisting"
+      @upload-json="handleUploadJson"
+    />
+    <AppView v-else />
+  </Transition>
 </template>
 
-<style scoped>
-/* Root layout is handled by #app in global.css (flex container) */
+<style>
+.view-enter-active,
+.view-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.view-enter-from,
+.view-leave-to {
+  opacity: 0;
+}
 </style>

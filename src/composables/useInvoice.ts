@@ -3,7 +3,7 @@
 // Layer: composables (depends on: Vue, types, utils)
 // ---------------------------------------------------------------------------
 
-import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
+import { ref, computed, watch, toRaw, type Ref, type ComputedRef } from 'vue'
 import { createEmptyInvoice, getNextInvoiceNumber } from '@/utils/defaults'
 import { computeTotals } from '@/utils/calculations'
 import type { InvoiceData, TemplateId, Totals } from '@/types'
@@ -131,7 +131,10 @@ export function useInvoice(): UseInvoiceReturn {
   function loadInvoice(data: InvoiceData, markDirty: boolean = true): TemplateId {
     let cloned: InvoiceData
     try {
-      cloned = structuredClone(data)
+      // Use toRaw to unwrap Vue reactive proxy before structuredClone.
+      // Data may come from a reactive ref (e.g. entryMode.payload) and
+      // structuredClone cannot clone Proxy objects.
+      cloned = structuredClone(toRaw(data))
     } catch {
       throw new Error(
         'Failed to load invoice: the provided data could not be cloned.',
