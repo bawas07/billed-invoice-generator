@@ -11,6 +11,7 @@ describe('useHistory', () => {
   let history: ReturnType<typeof useHistory>
 
   beforeEach(() => {
+    localStorage.clear()
     history = useHistory()
   })
 
