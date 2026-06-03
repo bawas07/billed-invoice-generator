@@ -9,13 +9,14 @@
 
 :root {
   /* --------------------------------------------------------------------- */
-  /* 4.1 — Color Tokens (22 total — Karang palette)                        */
+  /* 4.1 — Color Tokens (24 total — Karang palette)                        */
   /* --------------------------------------------------------------------- */
   --color-reef: #E4F0EE;
   --color-reef-mid: #D0E8E4;
   --color-mangrove: #162E2A;
   --color-mangrove-mid: #1E3C36;
   --color-mangrove-lt: #24473F;
+  --color-mangrove-deep: #0F1F1C;
   --color-coral: #E8734A;
   --color-coral-dark: #C85D38;
   --color-coral-pale: #FDEEE8;
@@ -29,6 +30,7 @@
   --color-text-muted: #5A8078;
   --color-text-on-dark: #E4F0EE;
   --color-text-dim: rgba(228, 240, 238, 0.42);
+  --color-text-dimmer: rgba(228, 240, 238, 0.28);
 
   /* Border colors */
   --color-border: #C0D8D4;

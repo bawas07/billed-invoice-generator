@@ -25,16 +25,30 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   color: var(--color-text-primary);
-  background: var(--color-reef);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
 }
 
-#app {
+body:not(.view-landing) {
+  background: var(--color-reef);
+}
+
+body.view-landing {
+  background: var(--color-mangrove-deep);
+  color: var(--color-text-on-dark);
+  overflow-x: hidden;
+}
+
+body:not(.view-landing) #app {
   height: 100vh;
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
+}
+
+body.view-landing #app {
+  display: block;
+  height: 100vh;
 }
 
 /* ---- Utility ---- */
